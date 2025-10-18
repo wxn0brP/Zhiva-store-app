@@ -95,22 +95,25 @@ fetch("/api/installed?auth=" + token).then(res => res.json()).then((data) => {
 
 function updateInstalled() {
     document.querySelectorAll<HTMLDivElement>(".installed").forEach((card) => {
+        const install = () => fetch("/api/install?auth=" + token + "&app=" + name);
+
         const name = card.getAttribute("data-name");
         const installed = zhivaInstalled.includes(name);
         card.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
-        if (!installed) {
-            const btn = document.createElement("button");
+        const btn = document.createElement("button");
+        if (installed) {
+            btn.innerHTML = "Update";
+            btn.addEventListener("click", () => install());
+        } else {
             btn.innerHTML = "Install";
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", async () => {
                 const conf = confirm(`Are you sure you want to install ${name}?`);
                 if (!conf) return;
-                fetch("/api/install?auth=" + token + "&app=" + name).then(() => {
-                    btn.remove();
-                    zhivaInstalled.push(name);
-                    updateInstalled();
-                });
+                await install();
+                zhivaInstalled.push(name);
+                updateInstalled();
             });
-            card.parentElement.appendChild(btn);
         }
+        card.parentElement.appendChild(btn);
     });
 }
