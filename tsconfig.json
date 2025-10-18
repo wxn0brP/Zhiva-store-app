@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"module": "es2022",
+		"target": "es2024",
+		"moduleResolution": "bundler",
+		"paths": {},
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"outDir": "./dist",
+		"declaration": true,
+		"types": [
+			"@wxn0brp/flanker-ui",
+			"@types/bun"
+		]
+	},
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
