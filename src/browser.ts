@@ -103,7 +103,10 @@ function updateInstalled() {
         const btn = document.createElement("button");
         if (installed) {
             btn.innerHTML = "Update";
-            btn.addEventListener("click", () => install());
+            btn.addEventListener("click", async () => {
+                await install();
+                alert("💜 Updated");
+            });
         } else {
             btn.innerHTML = "Install";
             btn.addEventListener("click", async () => {
