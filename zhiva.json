@@ -1,3 +1,7 @@
 {
-    "icon": "public/favicon.png"
+    "icon": "public/favicon.png",
+    "name": "Zhiva Store",
+    "description": "ZhiVa Store",
+    "version": "0.0.1",
+    "author": "wxn0brP"
 }
