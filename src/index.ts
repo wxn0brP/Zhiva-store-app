@@ -31,3 +31,19 @@ api.get("/installed", async (req, res) => {
     const apps = dirs.map((dir) => readdirSync(`${process.env.ZHIVA_ROOT}/apps/${dir}`).map((file) => `${dir}/${file}`));
     return { apps: apps.flat() };
 });
+
+api.get("/start", (req, res) => {
+    const app = req.query.app;
+    if (!app) return { err: true, msg: "No app specified" };
+
+    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva-startup ${app}`, { stdio: "inherit" });
+    return { err: false };
+});
+
+api.get("/open-gh", (req, res) => {
+    const app = req.query.app;
+    if (!app) return { err: true, msg: "No app specified" };
+
+    execSync(`xdg-open https://github.com/${app}`, { stdio: "inherit" });
+    return { err: false };
+});

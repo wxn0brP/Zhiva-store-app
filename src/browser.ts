@@ -51,14 +51,19 @@ export const zhivaRepoListView = mountView({
     selector: "#zhiva-repo-list",
     queryFunction: () => fetchZhivaRepos(),
     template: (repo) => `
-        <div class="repo-card" data-id="${repo.id}">
+        <div class="repo-card" data-id="${repo.id}" data-name="${repo.full_name}">
             <div class="repo-icon">
                 <div class="icon-placeholder">📦</div>
             </div>
             <div class="repo-info">
                 <h3><a href="${repo.html_url}" target="_blank">${repo.full_name}</a></h3>
-                <span class="installed" data-name="${repo.full_name}"></span>
+                <span class="installed"></span>
                 <p>${repo.description || "No description available."}</p>
+            </div>
+            <div class="repo-actions">
+                <button class="install">Install</button>
+                <button class="start">Start</button>
+                <button class="open-gh">Open on GitHub</button>
             </div>
         </div>
     `,
@@ -94,29 +99,41 @@ fetch("/api/installed?auth=" + token).then(res => res.json()).then((data) => {
 });
 
 function updateInstalled() {
-    document.querySelectorAll<HTMLDivElement>(".installed").forEach((card) => {
-        const install = () => fetch("/api/install?auth=" + token + "&app=" + name);
+    document.querySelectorAll<HTMLDivElement>(".repo-card").forEach((card) => {
+        const installFn = () => fetch("/api/install?auth=" + token + "&app=" + name);
 
         const name = card.getAttribute("data-name");
+
         const installed = zhivaInstalled.includes(name);
-        card.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
-        const btn = document.createElement("button");
+        card.qs(".installed").innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
+
+        const installBtn = card.qs<HTMLButtonElement>(".install");
         if (installed) {
-            btn.innerHTML = "Update";
-            btn.addEventListener("click", async () => {
-                await install();
+            installBtn.innerHTML = "Update";
+            installBtn.addEventListener("click", async () => {
+                await installFn();
                 alert("💜 Updated");
             });
         } else {
-            btn.innerHTML = "Install";
-            btn.addEventListener("click", async () => {
+            installBtn.innerHTML = "Install";
+            installBtn.addEventListener("click", async () => {
                 const conf = confirm(`Are you sure you want to install ${name}?`);
                 if (!conf) return;
-                await install();
+                await installFn();
                 zhivaInstalled.push(name);
                 updateInstalled();
             });
         }
-        card.parentElement.appendChild(btn);
+
+        const startBtn = card.qs<HTMLButtonElement>(".start");
+        startBtn.style.display = installed ? "" : "none";
+        startBtn.addEventListener("click", () => {
+            fetch("/api/start?auth=" + token + "&app=" + name);
+        });
+
+        const ghBtn = card.qs<HTMLButtonElement>(".open-gh");
+        ghBtn.addEventListener("click", () => {
+            fetch("/api/open-gh?auth=" + token + "&app=" + name);
+        });
     });
 }

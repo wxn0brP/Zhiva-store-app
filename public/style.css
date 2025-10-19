@@ -42,3 +42,7 @@ h3 {
     padding-bottom: 1rem;
     border-bottom: 1px solid #333;
 }
+
+.repo-actions {
+    margin-top: 5px;
+}
