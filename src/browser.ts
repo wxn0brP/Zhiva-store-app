@@ -180,7 +180,8 @@ function updateInstalled() {
             fetch("/api/open-gh?auth=" + token + "&app=" + name);
         }
 
-        card.qs("a").onclick = () => {
+        card.qs("a").onclick = (e) => {
+            e.preventDefault();
             fetch("/api/open-gh?auth=" + token + "&app=" + name);
         }
     });
