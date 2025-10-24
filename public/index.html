@@ -10,7 +10,30 @@
 </head>
 
 <body>
-    <section id="zhiva-repo-list"></section>
+    <header>
+        <h1>Zhiva Store</h1>
+    </header>
+    <main>
+        <section id="zhiva-repo-list"></section>
+    </main>
+    <footer>
+        <p>Powered by Zhiva</p>
+    </footer>
+
+    <div id="confirmation-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+            <div id="modal-warning" style="display: none; color: orange; margin-top: 10px;">
+                Warning: This application is from an unverified developer (not "wxn0brP") and does not belong to the
+                main Zhiva creator. Installing it may pose a security risk.
+            </div>
+            <div class="modal-buttons">
+                <button id="modal-confirm">Confirm</button>
+                <button id="modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="index.js"></script>
 </body>
 

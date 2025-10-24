@@ -1,6 +1,12 @@
 import { mountView } from "@wxn0brp/flanker-ui";
 import "@wxn0brp/flanker-ui/html";
 
+const modal = qs("#confirmation-modal");
+const modalMessage = qs<HTMLParagraphElement>("#modal-message");
+const modalWarning = qs("#modal-warning");
+const modalConfirm = qs<HTMLButtonElement>("#modal-confirm");
+const modalCancel = qs<HTMLButtonElement>("#modal-cancel");
+
 interface Repo {
     id: number;
     name: string;
@@ -8,6 +14,7 @@ interface Repo {
     html_url: string;
     description: string | null;
     owner: { login: string };
+    stargazers_count: number;
 }
 
 const ICON_PATHS = [
@@ -18,6 +25,32 @@ const ICON_PATHS = [
 ];
 
 let zhivaInstalled: string[] = [];
+
+function showConfirmation(message: string, showWarning: boolean, onConfirm: () => void) {
+    if (!modal || !modalMessage || !modalWarning || !modalConfirm || !modalCancel) return;
+
+    modalMessage.textContent = message;
+    modalWarning.style.display = showWarning ? "block" : "none";
+    modal.style.display = "flex";
+
+    const confirmHandler = () => {
+        onConfirm();
+        hideModal();
+    }
+
+    const cancelHandler = () => {
+        hideModal();
+    }
+
+    const hideModal = () => {
+        modal.style.display = "none";
+        modalConfirm.removeEventListener("click", confirmHandler);
+        modalCancel.removeEventListener("click", cancelHandler);
+    }
+
+    modalConfirm.addEventListener("click", confirmHandler);
+    modalCancel.addEventListener("click", cancelHandler);
+}
 
 async function findRepoIcon(repo: Repo): Promise<string | null> {
     const rawUrl = `https://raw.githubusercontent.com/${repo.full_name}/HEAD/`;
@@ -50,16 +83,18 @@ async function fetchZhivaRepos(): Promise<Repo[]> {
 export const zhivaRepoListView = mountView({
     selector: "#zhiva-repo-list",
     queryFunction: () => fetchZhivaRepos(),
-    template: (repo) => `
-        <div class="repo-card" data-id="${repo.id}" data-name="${repo.full_name}">
-            <div class="repo-icon">
-                <div class="icon-placeholder">📦</div>
+    template: (repo: Repo) => `
+        <div class="repo-card" data-id="${repo.id}" data-name="${repo.full_name}" data-owner="${repo.owner.login}">
+            <div class="repo-header">
+                <div class="repo-icon">
+                    <div class="icon-placeholder">📦</div>
+                </div>
+                <div class="repo-info">
+                    <h3><a href="${repo.html_url}">${repo.full_name}</a></h3>
+                    <span class="installed"></span>
+                </div>
             </div>
-            <div class="repo-info">
-                <h3><a href="${repo.html_url}" target="_blank">${repo.full_name}</a></h3>
-                <span class="installed"></span>
-                <p>${repo.description || "No description available."}</p>
-            </div>
+            <p class="repo-description">${repo.description || "No description available."}</p>
             <div class="repo-actions">
                 <button class="install">Install</button>
                 <button class="start">Start</button>
@@ -70,7 +105,7 @@ export const zhivaRepoListView = mountView({
     onData: (repos) => {
         repos.forEach(async (repo: Repo) => {
             const iconUrl = await findRepoIcon(repo);
-            const card = document.querySelector(`.repo-card[data-id="${repo.id}"] .repo-icon`);
+            const card = qs(`.repo-card[data-id="${repo.id}"] .repo-icon`);
             if (!card) return;
             if (!iconUrl) return;
 
@@ -100,40 +135,53 @@ fetch("/api/installed?auth=" + token).then(res => res.json()).then((data) => {
 
 function updateInstalled() {
     document.querySelectorAll<HTMLDivElement>(".repo-card").forEach((card) => {
+        const name = card.getAttribute("data-name");
+        const owner = card.getAttribute("data-owner");
+
         const installFn = () => fetch("/api/install?auth=" + token + "&app=" + name);
 
-        const name = card.getAttribute("data-name");
-
         const installed = zhivaInstalled.includes(name);
-        card.qs(".installed").innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
+        const installedEl = card.qs(".installed");
+        if (installedEl)
+            installedEl.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
 
         const installBtn = card.qs<HTMLButtonElement>(".install");
+
         if (installed) {
             installBtn.innerHTML = "Update";
-            installBtn.addEventListener("click", async () => {
+            installBtn.onclick = async () => {
                 await installFn();
                 alert("💜 Updated");
-            });
+            }
         } else {
             installBtn.innerHTML = "Install";
-            installBtn.addEventListener("click", async () => {
-                const conf = confirm(`Are you sure you want to install ${name}?`);
-                if (!conf) return;
-                await installFn();
-                zhivaInstalled.push(name);
-                updateInstalled();
-            });
+            installBtn.onclick = () => {
+                const isVerified = owner === "wxn0brP";
+                showConfirmation(
+                    `Are you sure you want to install ${name}?`,
+                    !isVerified,
+                    async () => {
+                        await installFn();
+                        zhivaInstalled.push(name);
+                        updateInstalled();
+                    }
+                );
+            }
         }
 
         const startBtn = card.qs<HTMLButtonElement>(".start");
         startBtn.style.display = installed ? "" : "none";
-        startBtn.addEventListener("click", () => {
-            fetch("/api/start?auth=" + token + "&app=" + name);
-        });
 
-        const ghBtn = card.qs<HTMLButtonElement>(".open-gh");
-        ghBtn.addEventListener("click", () => {
+        startBtn.onclick = () => {
+            fetch("/api/start?auth=" + token + "&app=" + name);
+        }
+
+        card.qs(".open-gh").onclick = () => {
             fetch("/api/open-gh?auth=" + token + "&app=" + name);
-        });
+        }
+
+        card.qs("a").onclick = () => {
+            fetch("/api/open-gh?auth=" + token + "&app=" + name);
+        }
     });
 }
