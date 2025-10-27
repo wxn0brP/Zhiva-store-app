@@ -17,7 +17,7 @@ api.use((req, res, next) => {
     next();
 });
 
-api.get("/install", (req, res) => {
+api.get("/install", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -26,13 +26,13 @@ api.get("/install", (req, res) => {
     return { err: false };
 });
 
-api.get("/installed", async (req, res) => {
+api.get("/installed", async () => {
     const dirs = readdirSync(`${process.env.ZHIVA_ROOT}/apps`);
     const apps = dirs.map((dir) => readdirSync(`${process.env.ZHIVA_ROOT}/apps/${dir}`).map((file) => `${dir}/${file}`));
     return { apps: apps.flat() };
 });
 
-api.get("/start", (req, res) => {
+api.get("/start", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -44,6 +44,21 @@ api.get("/open-gh", (req, res) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`xdg-open https://github.com/${app}`, { stdio: "inherit" });
+    let cmd = "";
+    switch (process.platform) {
+        case "linux":
+            cmd = "xdg-open";
+            break;
+        case "win32":
+            cmd = `start ""`;
+            break;
+        case "darwin":
+            cmd = "open";
+            break;
+        default:
+            console.warn("Unsupported platform:", process.platform);
+            return { err: true, msg: "Unsupported platform" };
+    }
+    execSync(`${cmd} https://github.com/${app}`, { stdio: "inherit" });
     return { err: false };
 });
