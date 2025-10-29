@@ -40,7 +40,7 @@ api.get("/start", (req) => {
     return { err: false };
 });
 
-api.get("/open-gh", (req, res) => {
+api.get("/open-gh", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
