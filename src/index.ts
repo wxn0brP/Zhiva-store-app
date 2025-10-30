@@ -1,8 +1,9 @@
+import { Valthera } from "@wxn0brp/db";
+import { createLock } from "@wxn0brp/db-lock";
 import { app, waitToStart } from "@wxn0brp/zhiva-base-lib/index";
 import { openWindow } from "@wxn0brp/zhiva-base-lib/openWindow";
 import { execSync } from "child_process";
 import { randomBytes } from "crypto";
-import { readdirSync } from "fs";
 
 app.static("public");
 app.static("dist");
@@ -10,6 +11,8 @@ const token = randomBytes(32).toString("hex");
 const port = await waitToStart();
 const window = openWindow(port + "/?auth=" + token);
 window.on("close", () => process.exit(0));
+
+const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
 
 const api = app.router("/api");
 api.use((req, res, next) => {
@@ -26,10 +29,23 @@ api.get("/install", (req) => {
     return { err: false };
 });
 
+api.get("/uninstall", (req) => {
+    let app = req.query.app;
+    if (!app) return { err: true, msg: "No app specified" };
+
+    if (!app.includes("/")) app = `wxn0brP/${app}`;
+    const exists = db.findOne("apps", { name: app });
+
+    if (!exists) return { err: true, msg: "App not found" };
+
+    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva uninstall ${app}`, { stdio: "inherit" });
+
+    return { err: false };
+});
+
 api.get("/installed", async () => {
-    const dirs = readdirSync(`${process.env.ZHIVA_ROOT}/apps`);
-    const apps = dirs.map((dir) => readdirSync(`${process.env.ZHIVA_ROOT}/apps/${dir}`).map((file) => `${dir}/${file}`));
-    return { apps: apps.flat() };
+    const apps = await db.find("apps");
+    return { apps: apps.map((app) => app.name) };
 });
 
 api.get("/start", (req) => {

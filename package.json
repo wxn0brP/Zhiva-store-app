@@ -20,6 +20,8 @@
 	},
 	"devDependencies": {
 		"@types/bun": "*",
+		"@wxn0brp/db": "*",
+		"@wxn0brp/db-lock": "github:wxn0brP/ValtheraDB-lock#dist",
 		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
 		"typescript": "*"
 	}

@@ -97,6 +97,7 @@ export const zhivaRepoListView = mountView({
             <p class="repo-description">${repo.description || "No description available."}</p>
             <div class="repo-actions">
                 <button class="install">Install</button>
+                <button class="uninstall" style="color: red">UnInstall</button>
                 <button class="start">Start</button>
                 <button class="open-gh">Open on GitHub</button>
             </div>
@@ -146,12 +147,26 @@ function updateInstalled() {
             installedEl.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
 
         const installBtn = card.qs<HTMLButtonElement>(".install");
+        const uninstallBtn = card.qs<HTMLButtonElement>(".uninstall");
 
         if (installed) {
             installBtn.innerHTML = "Update";
             installBtn.onclick = async () => {
                 await installFn();
                 alert("💜 Updated");
+            }
+
+            uninstallBtn.style.display = "";
+            uninstallBtn.onclick = () => {
+                showConfirmation(
+                    `Are you sure you want to uninstall ${name}?`,
+                    false,
+                    async () => {
+                        await fetch("/api/uninstall?auth=" + token + "&app=" + name);
+                        zhivaInstalled = zhivaInstalled.filter((app) => app !== name);
+                        updateInstalled();
+                    }
+                )
             }
         } else {
             installBtn.innerHTML = "Install";
@@ -167,6 +182,8 @@ function updateInstalled() {
                     }
                 );
             }
+
+            uninstallBtn.style.display = "none";
         }
 
         const startBtn = card.qs<HTMLButtonElement>(".start");
