@@ -21,7 +21,7 @@ api.get("/install", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva-install ${app}`, { stdio: "inherit" });
+    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva install ${app}`, { stdio: "inherit" });
 
     return { err: false };
 });
@@ -36,7 +36,7 @@ api.get("/start", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva-startup ${app}`, { stdio: "inherit" });
+    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva start ${app}`, { stdio: "inherit" });
     return { err: false };
 });
 
