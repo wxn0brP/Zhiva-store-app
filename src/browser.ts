@@ -152,12 +152,17 @@ function updateInstalled() {
         if (installed) {
             installBtn.innerHTML = "Update";
             installBtn.onclick = async () => {
+                installBtn.disabled = true;
+                installBtn.textContent = "Updating...";
                 await installFn();
+                installBtn.textContent = "Update";
+                installBtn.disabled = false;
                 alert("💜 Updated");
             }
 
             uninstallBtn.style.display = "";
             uninstallBtn.onclick = () => {
+                if (installBtn.disabled) return;
                 showConfirmation(
                     `Are you sure you want to uninstall ${name}?`,
                     false,
@@ -176,8 +181,12 @@ function updateInstalled() {
                     `Are you sure you want to install ${name}?`,
                     !isVerified,
                     async () => {
+                        installBtn.disabled = true;
+                        installBtn.textContent = "Installing...";
                         await installFn();
                         zhivaInstalled.push(name);
+                        installBtn.textContent = "Install";
+                        installBtn.disabled = false;
                         updateInstalled();
                     }
                 );
