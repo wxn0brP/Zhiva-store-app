@@ -12,6 +12,7 @@ const port = await waitToStart();
 const window = openWindow(port + "/?auth=" + token);
 window.on("close", () => process.exit(0));
 
+const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
 const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
 
 const api = app.router("/api");
@@ -24,7 +25,7 @@ api.get("/install", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva install ${app}`, { stdio: "inherit" });
+    execSync(`${zhivaBin} install ${app}`, { stdio: "inherit" });
 
     return { err: false };
 });
@@ -38,7 +39,7 @@ api.get("/uninstall", (req) => {
 
     if (!exists) return { err: true, msg: "App not found" };
 
-    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva uninstall ${app}`, { stdio: "inherit" });
+    execSync(`${zhivaBin} uninstall ${app}`, { stdio: "inherit" });
 
     return { err: false };
 });
@@ -52,7 +53,7 @@ api.get("/start", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${process.env.ZHIVA_ROOT}/bin/zhiva start ${app}`, { stdio: "inherit" });
+    execSync(`${zhivaBin} start ${app}`, { stdio: "inherit" });
     return { err: false };
 });
 
@@ -78,3 +79,22 @@ api.get("/open-gh", (req) => {
     execSync(`${cmd} https://github.com/${app}`, { stdio: "inherit" });
     return { err: false };
 });
+
+api.get("/update", () => {
+    try {
+        execSync(`${zhivaBin} update`, { stdio: "inherit" });
+        return { err: false };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+});
+
+api.get("/get-updates", () => {
+    try {
+        let data = execSync(`${zhivaBin} update try`).toString();
+        const updates = JSON.parse(data.match(/\[JSON\](.*)\[\/JSON\]/)[1]);
+        return { err: false, updates };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+})

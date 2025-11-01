@@ -6,6 +6,9 @@ const modalMessage = qs<HTMLParagraphElement>("#modal-message");
 const modalWarning = qs("#modal-warning");
 const modalConfirm = qs<HTMLButtonElement>("#modal-confirm");
 const modalCancel = qs<HTMLButtonElement>("#modal-cancel");
+const checkUpdatesBtn = qs<HTMLButtonElement>("#check-updates-btn");
+const updateAllBtn = qs<HTMLButtonElement>("#update-all-btn");
+const updateStatus = qs("#update-status");
 
 interface Repo {
     id: number;
@@ -212,3 +215,66 @@ function updateInstalled() {
         }
     });
 }
+
+checkUpdatesBtn.onclick = () => checkForUpdates();
+checkForUpdates();
+
+async function checkForUpdates() {
+    checkUpdatesBtn.disabled = true;
+    updateStatus.innerHTML = "Checking...";
+
+    document.querySelectorAll(".repo-card").forEach(card => card.classList.remove("has-update"));
+
+    const res = await fetch("/api/get-updates?auth=" + token);
+    const data = await res.json();
+    const updates = data.updates;
+
+    checkUpdatesBtn.disabled = false;
+
+    if (data.err) {
+        console.error(`Error checking for updates: ${data.msg}`);
+        updateStatus.innerHTML = `<span style="color: red;">Error checking for updates</span>`;
+        return;
+    }
+
+    const appsToUpdate = Object.keys(updates).filter(app => updates[app]);
+
+    if (!appsToUpdate.length) {
+        updateStatus.innerHTML = "No updates available";
+        return;
+    }
+
+    updateStatus.innerHTML = `Updates available for: ${appsToUpdate.length} app${appsToUpdate.length === 1 ? "" : "s"}.`;
+    appsToUpdate.forEach(appName => {
+        const card = qs(`.repo-card[data-name="${appName}"]`);
+        if (card) {
+            card.classList.add("has-update");
+            const updateBtn = card.qs<HTMLButtonElement>(".install");
+            if (updateBtn) updateBtn.textContent = "Update available";
+        }
+    });
+}
+
+updateAllBtn.onclick = async () => {
+    updateAllBtn.disabled = true;
+    updateAllBtn.textContent = "Updating...";
+
+    const res = await fetch("/api/update?auth=" + token);
+    const data = await res.json();
+
+    updateAllBtn.disabled = false;
+    updateAllBtn.textContent = "Update All";
+
+    if (data.err) {
+        alert(`Error updating apps: ${data.msg}`);
+        return;
+    }
+
+    alert("💜 Apps updated successfully!");
+    document.querySelectorAll(".repo-card").forEach(card => card.classList.remove("has-update"));
+    fetch("/api/installed?auth=" + token).then(res => res.json()).then((data) => {
+        if (data.err) return;
+        zhivaInstalled = data.apps;
+        updateInstalled();
+    });
+};

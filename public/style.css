@@ -123,6 +123,10 @@ h3 {
     gap: 5px;
 }
 
+.has-update {
+    border-color: darkviolet;
+}
+
 .modal {
     position: fixed;
     z-index: 1;
