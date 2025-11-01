@@ -1,5 +1,6 @@
-import { mountView } from "@wxn0brp/flanker-ui";
+import { mountView, ReactiveCell } from "@wxn0brp/flanker-ui";
 import "@wxn0brp/flanker-ui/html";
+import { incrementCell } from "@wxn0brp/flanker-ui/storeUtils";
 
 const modal = qs("#confirmation-modal");
 const modalMessage = qs<HTMLParagraphElement>("#modal-message");
@@ -28,6 +29,8 @@ const ICON_PATHS = [
 ];
 
 let zhivaInstalled: string[] = [];
+
+const appsToUpdateCount = new ReactiveCell(0);
 
 function showConfirmation(message: string, showWarning: boolean, onConfirm: () => void) {
     if (!modal || !modalMessage || !modalWarning || !modalConfirm || !modalCancel) return;
@@ -180,6 +183,7 @@ function updateInstalled() {
                 installBtn.disabled = false;
                 alert("💜 Updated");
                 card.clR("has-update");
+                incrementCell(appsToUpdateCount, -1);
             }
 
             uninstallBtn.style.display = "";
@@ -241,6 +245,12 @@ checkUpdatesBtn.onclick = () => {
 }
 checkForUpdates();
 
+appsToUpdateCount.subscribe(count => {
+    if (count < 0) return appsToUpdateCount.set(0);
+    if (!count) return updateStatus.innerHTML = "No updates available";
+    updateStatus.innerHTML = `Updates available for: ${count} app${count === 1 ? "" : "s"}.`;
+})
+
 async function checkForUpdates() {
     checkUpdatesBtn.disabled = true;
     updateStatus.innerHTML = "Checking...";
@@ -260,13 +270,7 @@ async function checkForUpdates() {
     }
 
     const appsToUpdate = Object.keys(updates).filter(app => updates[app]);
-
-    if (!appsToUpdate.length) {
-        updateStatus.innerHTML = "No updates available";
-        return;
-    }
-
-    updateStatus.innerHTML = `Updates available for: ${appsToUpdate.length} app${appsToUpdate.length === 1 ? "" : "s"}.`;
+    appsToUpdateCount.set(appsToUpdate.length);
     appsToUpdate.forEach(appName => {
         const card = qs(`.repo-card[data-name="${appName}"]`);
         if (card) {
