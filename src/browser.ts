@@ -78,9 +78,27 @@ async function findRepoIcon(repo: Repo): Promise<string | null> {
 }
 
 async function fetchZhivaRepos(): Promise<Repo[]> {
+    const cachedData = localStorage.getItem("reposCache");
+    if (cachedData) {
+        try {
+            const data = JSON.parse(cachedData);
+            if (data.time > Date.now()) return data.data;
+            localStorage.removeItem("reposCache");
+        } catch (e) {
+            console.warn("Cache parsing failed", e);
+        }
+    }
+
     const res = await fetch("https://api.github.com/search/repositories?q=topic:Zhiva-app");
     const data = await res.json();
-    return data.items || [];
+    const repos = data.items || [];
+
+    localStorage.setItem("reposCache", JSON.stringify({
+        time: Date.now() + 1000 * 60 * 10, // 10 minutes
+        data: repos,
+    }));
+
+    return repos;
 }
 
 export const zhivaRepoListView = mountView({
@@ -216,7 +234,10 @@ function updateInstalled() {
     });
 }
 
-checkUpdatesBtn.onclick = () => checkForUpdates();
+checkUpdatesBtn.onclick = () => {
+    checkForUpdates();
+    localStorage.removeItem("reposCache");
+}
 checkForUpdates();
 
 async function checkForUpdates() {
