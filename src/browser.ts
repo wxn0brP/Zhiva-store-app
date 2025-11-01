@@ -179,6 +179,7 @@ function updateInstalled() {
                 installBtn.textContent = "Update";
                 installBtn.disabled = false;
                 alert("💜 Updated");
+                card.clR("has-update");
             }
 
             uninstallBtn.style.display = "";
