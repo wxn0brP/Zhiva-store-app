@@ -7,7 +7,12 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"outDir": "./dist",
-		"declaration": true
+		"declaration": true,
+		"types": [
+			"@types/bun",
+			"@wxn0brp/flanker-ui",
+			"@wxn0brp/flanker-dialog"
+		]
 	},
 	"include": [
 		"./src"

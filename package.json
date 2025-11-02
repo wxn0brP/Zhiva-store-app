@@ -12,16 +12,15 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"build": "bun build src/browser.ts --minify --outfile dist/index.js --target browser -e @wxn0brp/vql-client",
+		"build": "bun build src/browser.ts --minify --outdir dist --target browser -e @wxn0brp/vql-client",
 		"start": "bun run src/index.ts"
-	},
-	"dependencies": {
-		"@wxn0brp/flanker-ui": "^0.4.3",
-		"@wxn0brp/db": "*",
-		"@wxn0brp/db-lock": "github:wxn0brP/ValtheraDB-lock#dist"
 	},
 	"devDependencies": {
 		"@types/bun": "*",
+		"@wxn0brp/db": "*",
+		"@wxn0brp/db-lock": "github:wxn0brP/ValtheraDB-lock#dist",
+		"@wxn0brp/flanker-dialog": "^0.0.3",
+		"@wxn0brp/flanker-ui": "^0.4.3",
 		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
 		"typescript": "*"
 	}

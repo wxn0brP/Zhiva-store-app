@@ -4,9 +4,16 @@
     box-sizing: border-box;
 }
 
+:root {
+    --txt: #fff;
+    --back: #111;
+    --accent: #8a2be2;
+    --accentRGB: 138, 43, 226;
+}
+
 body {
-    background-color: #111;
-    color: #fff;
+    background-color: var(--back);
+    color: var(--txt);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
     display: flex;
@@ -53,7 +60,7 @@ button {
     background-color: #222;
     border: 1px solid darkviolet;
     border-radius: 0.5rem;
-    color: #fff;
+    color: var(--txt);
     padding: 0 1rem;
     cursor: pointer;
     margin-top: 5px;

@@ -1,3 +1,5 @@
+import { uiMsg } from "@wxn0brp/flanker-dialog";
+import "@wxn0brp/flanker-dialog/style.css";
 import { mountView, ReactiveCell } from "@wxn0brp/flanker-ui";
 import "@wxn0brp/flanker-ui/html";
 import { incrementCell } from "@wxn0brp/flanker-ui/storeUtils";
@@ -181,7 +183,7 @@ function updateInstalled() {
                 await installFn();
                 installBtn.textContent = "Update";
                 installBtn.disabled = false;
-                alert("💜 Updated");
+                uiMsg("💜 Updated");
                 card.clR("has-update");
                 incrementCell(appsToUpdateCount, -1);
             }
@@ -292,11 +294,11 @@ updateAllBtn.onclick = async () => {
     updateAllBtn.textContent = "Update All";
 
     if (data.err) {
-        alert(`Error updating apps: ${data.msg}`);
+        uiMsg(`Error updating apps: ${data.msg}`);
         return;
     }
 
-    alert("💜 Apps updated successfully!");
+    uiMsg("💜 Apps updated successfully!");
     document.querySelectorAll(".repo-card").forEach(card => card.classList.remove("has-update"));
     fetch("/api/installed?auth=" + token).then(res => res.json()).then((data) => {
         if (data.err) return;
