@@ -42,6 +42,7 @@ const ICON_PATHS = [
 let zhivaInstalled: string[] = [];
 const appsManifest: Record<string, Manifest> = {};
 const appsToUpdateCount = new ReactiveCell(0);
+const gitRaw = "https://raw.githubusercontent.com/";
 
 function showConfirmation(message: string, showWarning: boolean, onConfirm: () => void) {
     if (!modal || !modalMessage || !modalWarning || !modalConfirm || !modalCancel) return;
@@ -70,7 +71,7 @@ function showConfirmation(message: string, showWarning: boolean, onConfirm: () =
 }
 
 async function loadManifest(name: string) {
-    const url = `https://raw.githubusercontent.com/${name}/HEAD/zhiva.json`;
+    const url = `${gitRaw}${name}/HEAD/zhiva.json`;
     try {
         const res = await fetch(url);
         if (res.ok) {
@@ -93,10 +94,11 @@ async function getManifest(repo: Repo | string) {
 
 async function findRepoIcon(repo: Repo): Promise<string | null> {
     const manifest = await getManifest(repo);
-    if (manifest.icon) return `https://raw.githubusercontent.com/${repo.full_name}/HEAD/${manifest.icon}`;
+    if (manifest.icon)
+        return `${gitRaw}${repo.full_name}/HEAD/${manifest.icon}`;
 
     for (const path of ICON_PATHS) {
-        const url = "https://raw.githubusercontent.com/" + repo.full_name + "/HEAD/" + path;
+        const url = gitRaw + repo.full_name + "/HEAD/" + path;
         try {
             const res = await fetch(url, { method: "HEAD" });
             if (res.ok) return url;
