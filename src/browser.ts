@@ -23,6 +23,15 @@ interface Repo {
     stargazers_count: number;
 }
 
+interface Manifest {
+    name?: string;
+    icon?: string;
+    win_icon?: string;
+    description?: string;
+    version?: string;
+    author?: string;
+}
+
 const ICON_PATHS = [
     "favicon.png",
     "favicon.svg",
@@ -31,7 +40,7 @@ const ICON_PATHS = [
 ];
 
 let zhivaInstalled: string[] = [];
-
+const appsManifest: Record<string, Manifest> = {};
 const appsToUpdateCount = new ReactiveCell(0);
 
 function showConfirmation(message: string, showWarning: boolean, onConfirm: () => void) {
@@ -60,19 +69,34 @@ function showConfirmation(message: string, showWarning: boolean, onConfirm: () =
     modalCancel.addEventListener("click", cancelHandler);
 }
 
-async function findRepoIcon(repo: Repo): Promise<string | null> {
-    const rawUrl = `https://raw.githubusercontent.com/${repo.full_name}/HEAD/`;
-    const zhivaJsonUrl = rawUrl + `zhiva.json`;
+async function loadManifest(name: string) {
+    const url = `https://raw.githubusercontent.com/${name}/HEAD/zhiva.json`;
     try {
-        const res = await fetch(zhivaJsonUrl);
+        const res = await fetch(url);
         if (res.ok) {
             const json = await res.json();
-            if (json.icon) return rawUrl + json.icon;
+            appsManifest[name] = json;
         }
-    } catch { }
+    } catch {
+        appsManifest[name] = null;
+    }
+}
+
+async function getManifest(repo: Repo | string) {
+    const name = typeof repo === "string" ? repo : repo.full_name;
+    const cache = appsManifest[name];
+    if (cache) return cache;
+    if (cache === null) return {};
+    await loadManifest(name);
+    return appsManifest[name];
+}
+
+async function findRepoIcon(repo: Repo): Promise<string | null> {
+    const manifest = await getManifest(repo);
+    if (manifest.icon) return `https://raw.githubusercontent.com/${repo.full_name}/HEAD/${manifest.icon}`;
 
     for (const path of ICON_PATHS) {
-        const url = rawUrl + path;
+        const url = "https://raw.githubusercontent.com/" + repo.full_name + "/HEAD/" + path;
         try {
             const res = await fetch(url, { method: "HEAD" });
             if (res.ok) return url;
