@@ -95,7 +95,7 @@ async function getManifest(repo: Repo | string) {
 async function findRepoIcon(repo: Repo): Promise<string | null> {
     const manifest = await getManifest(repo);
     if (manifest.icon === "default" || (!manifest.icon && manifest.win_icon === "default"))
-        return `${gitRaw}wxn0brP/Zhiva-base-lib/HEAD/assets/zhiva.png`;
+        return `/zhiva-assets/zhiva.ico`;
     if (manifest.icon || manifest.win_icon)
         return `${gitRaw}${repo.full_name}/HEAD/${manifest.icon || manifest.win_icon}`;
 
