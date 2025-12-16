@@ -5,3 +5,5 @@ dist
 package-lock.json
 yarn.lock
 bun.lock
+.env
+.zhiva-port
