@@ -1,13 +1,16 @@
 # Zhiva Store App
 
+[![Install via Zhiva](https://img.shields.io/badge/Zhiva-install-blue)](zhiva://install/Zhiva-store-app)
+
 ## Installation:
 
 ```bash
-~/.zhiva/bin/zhiva-install wxn0brP/Zhiva-store-app
+zhiva install Zhiva-store-app
 ```
 
 ## Links:
-[Zhiva](https://github.com/wxn0brP/Zhiva)
+
+- [Zhiva](https://github.com/wxn0brP/Zhiva)
 
 ## License
 
