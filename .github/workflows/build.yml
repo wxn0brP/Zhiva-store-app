@@ -32,7 +32,7 @@ jobs:
           mkdir gh-pages-dist
           cp -r public/* gh-pages-dist/
           cp -r dist/* gh-pages-dist/
-          cp -r node_modules/@wxn0brp/zhiva-base-lib/assets gh-pages-dist/assets
+          cp -r node_modules/@wxn0brp/zhiva-base-lib/assets gh-pages-dist/zhiva-assets
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
