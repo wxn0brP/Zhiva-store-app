@@ -1,27 +1,17 @@
 import { Valthera } from "@wxn0brp/db";
 import { createLock } from "@wxn0brp/db-lock";
-import { app, waitToStart } from "@wxn0brp/zhiva-base-lib/index";
-import { openWindow } from "@wxn0brp/zhiva-base-lib/openWindow";
+import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
+import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
 import { execSync } from "child_process";
-import { randomBytes } from "crypto";
 
 app.static("public");
 app.static("dist");
-const token = randomBytes(32).toString("hex");
-const port = await waitToStart();
-const window = openWindow(port + "/?auth=" + token);
-window.on("close", () => process.exit(0));
+await oneWindow();
 
 const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
 const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
 
-const api = app.router("/api");
-api.use((req, res, next) => {
-    if (req.query.auth !== token) return res.status(401).send("Unauthorized");
-    next();
-});
-
-api.get("/install", (req) => {
+apiRouter.get("/install", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -30,7 +20,7 @@ api.get("/install", (req) => {
     return { err: false };
 });
 
-api.get("/uninstall", (req) => {
+apiRouter.get("/uninstall", (req) => {
     let app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -44,12 +34,12 @@ api.get("/uninstall", (req) => {
     return { err: false };
 });
 
-api.get("/installed", async () => {
+apiRouter.get("/installed", async () => {
     const apps = await db.find("apps");
     return { apps: apps.map((app) => app.name) };
 });
 
-api.get("/start", (req) => {
+apiRouter.get("/start", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -57,7 +47,7 @@ api.get("/start", (req) => {
     return { err: false };
 });
 
-api.get("/open-gh", (req) => {
+apiRouter.get("/open-gh", (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -80,7 +70,7 @@ api.get("/open-gh", (req) => {
     return { err: false };
 });
 
-api.get("/update", () => {
+apiRouter.get("/update", () => {
     try {
         execSync(`${zhivaBin} update`, { stdio: "inherit" });
         return { err: false };
@@ -89,7 +79,7 @@ api.get("/update", () => {
     }
 });
 
-api.get("/get-updates", () => {
+apiRouter.get("/get-updates", () => {
     try {
         let data = execSync(`${zhivaBin} update try`).toString();
         const updates = JSON.parse(data.match(/\[JSON\](.*)\[\/JSON\]/)[1]);
