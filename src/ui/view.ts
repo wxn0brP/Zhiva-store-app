@@ -36,7 +36,7 @@ export const zhivaRepoListView = mountView({
 
             const img = document.createElement("img");
             img.src = iconUrl;
-            img.alt = `icon for ${repo.name}`;
+            img.alt = `📦`;
             img.width = 32;
             img.height = 32;
             card.innerHTML = "";
