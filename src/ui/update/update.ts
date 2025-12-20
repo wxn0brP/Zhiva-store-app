@@ -1,8 +1,8 @@
 import { uiMsg } from "@wxn0brp/flanker-dialog";
 import { incrementCell, updateCell } from "@wxn0brp/flanker-ui/storeUtils";
 import { showConfirmation } from "../confirm";
-import { appsToUpdateCount, zhivaInstalled } from "../vars";
-import { fetchApi } from "@wxn0brp/zhiva-base-lib/front/api";
+import { appsToUpdateCount, DISABLED_TITLE, zhivaInstalled } from "../vars";
+import { fetchApi, IS_DESKTOP_APP } from "../../api";
 
 export function updateInstalled() {
     document.querySelectorAll<HTMLDivElement>(".repo-card").forEach((card) => {
@@ -11,7 +11,7 @@ export function updateInstalled() {
 
         const installFn = () => fetchApi("install", {}, { app: name });
 
-        const installed = zhivaInstalled.get().includes(name);
+        const installed = IS_DESKTOP_APP ? zhivaInstalled.get().includes(name) : true;
         const installedEl = card.qs(".installed");
         if (installedEl)
             installedEl.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
@@ -20,7 +20,10 @@ export function updateInstalled() {
         const uninstallBtn = card.qs<HTMLButtonElement>(".uninstall");
 
         if (installed) {
-            installBtn.innerHTML = "Update";
+            installBtn.innerHTML = IS_DESKTOP_APP ? "Update" : "Install";
+            if (!IS_DESKTOP_APP) {
+                installBtn.title = "The browser cannot access the application state";
+            }
             installBtn.onclick = async () => {
                 installBtn.disabled = true;
                 installBtn.textContent = "Updating...";
@@ -33,6 +36,10 @@ export function updateInstalled() {
             }
 
             uninstallBtn.style.display = "";
+            if (!IS_DESKTOP_APP) {
+                uninstallBtn.disabled = true;
+                uninstallBtn.title = DISABLED_TITLE;
+            }
             uninstallBtn.onclick = () => {
                 if (installBtn.disabled) return;
                 showConfirmation(
@@ -86,6 +93,11 @@ export function updateInstalled() {
 }
 
 const updateAllBtn = qs<HTMLButtonElement>("#update-all-btn");
+
+if (!IS_DESKTOP_APP) {
+    updateAllBtn.disabled = true;
+    updateAllBtn.title = DISABLED_TITLE;
+}
 
 updateAllBtn.onclick = async () => {
     updateAllBtn.disabled = true;

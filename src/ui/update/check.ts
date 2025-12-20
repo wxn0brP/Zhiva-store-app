@@ -1,5 +1,5 @@
 import { appsToUpdateCount, updateStatus } from "../vars";
-import { fetchApi } from "@wxn0brp/zhiva-base-lib/front/api";
+import { fetchApi, IS_DESKTOP_APP } from "../../api";
 
 export async function checkForUpdates() {
     checkUpdatesBtn.disabled = true;
@@ -10,8 +10,7 @@ export async function checkForUpdates() {
     const res = await fetchApi("get-updates");
     const data = await res.json();
     const updates = data.updates;
-
-    checkUpdatesBtn.disabled = false;
+    checkUpdatesBtn.disabled = !IS_DESKTOP_APP;
 
     if (data.err) {
         console.error(`Error checking for updates: ${data.msg}`);
@@ -32,6 +31,12 @@ export async function checkForUpdates() {
 }
 
 const checkUpdatesBtn = qs<HTMLButtonElement>("#check-updates-btn");
+
+if (!IS_DESKTOP_APP) {
+    checkUpdatesBtn.disabled = true;
+    checkUpdatesBtn.title = "";
+}
+
 checkUpdatesBtn.onclick = () => {
     checkForUpdates();
     localStorage.removeItem("reposCache");

@@ -75,6 +75,11 @@ button:hover {
     background-color: #333;
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 h3 {
     margin-bottom: 5px;
 }

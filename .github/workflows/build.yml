@@ -1,0 +1,41 @@
+name: Build Web
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+concurrency:
+  group: build
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir gh-pages-dist
+          cp -r public/* gh-pages-dist/
+          cp -r dist/* gh-pages-dist/
+          cp -r node_modules/@wxn0brp/zhiva-base-lib/assets gh-pages-dist/assets
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-dist
