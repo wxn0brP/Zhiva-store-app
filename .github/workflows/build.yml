@@ -34,7 +34,7 @@ jobs:
           cp -r dist/* gh-pages-dist/
           cp -r node_modules/@wxn0brp/zhiva-base-lib/assets gh-pages-dist/zhiva-assets
           find gh-pages-dist -type f -name "*.js" -o -name "*.html" -o -name "*.css" | while read file; do
-            sed -i 's|zhiva-assets/|https://raw.githubusercontent.com/wxn0brP/Zhiva-base-lib/HEAD/assets|g' "$file"
+            sed -i 's|zhiva-assets/|https://raw.githubusercontent.com/wxn0brP/Zhiva-base-lib/HEAD/assets/|g' "$file"
           done
 
       - name: Deploy
