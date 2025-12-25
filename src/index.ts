@@ -81,9 +81,8 @@ apiRouter.get("/update", () => {
 
 apiRouter.get("/get-updates", () => {
     try {
-        let data = execSync(`${zhivaBin} update try`).toString();
-        const updates = JSON.parse(data.match(/\[JSON\](.*)\[\/JSON\]/)[1]);
-        return { err: false, updates };
+        const data = execSync(`${zhivaBin} update --json`).toString();
+        return { err: false, updates: JSON.parse(data) };
     } catch (error) {
         return { err: true, msg: error.message };
     }
