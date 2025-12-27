@@ -86,4 +86,13 @@ apiRouter.get("/get-updates", () => {
     } catch (error) {
         return { err: true, msg: error.message };
     }
-})
+});
+
+apiRouter.get("/apps", () => {
+    try {
+        const data = execSync(`${zhivaBin} search --json`).toString();
+        return { err: false, apps: JSON.parse(data) };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+});

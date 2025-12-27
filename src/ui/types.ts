@@ -1,11 +1,8 @@
 export interface Repo {
-    id: number;
-    name: string;
     full_name: string;
-    html_url: string;
     description: string | null;
-    owner: { login: string };
     stargazers_count: number;
+    verified: boolean;
 }
 
 export interface Manifest {

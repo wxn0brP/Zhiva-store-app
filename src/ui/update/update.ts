@@ -7,7 +7,6 @@ import { fetchApi, IS_DESKTOP_APP } from "../../api";
 export function updateInstalled() {
     document.querySelectorAll<HTMLDivElement>(".repo-card").forEach((card) => {
         const name = card.getAttribute("data-name");
-        const owner = card.getAttribute("data-owner");
 
         const installFn = () => fetchApi("install", {}, { app: name });
 
@@ -55,7 +54,7 @@ export function updateInstalled() {
         } else {
             installBtn.innerHTML = "Install";
             installBtn.onclick = () => {
-                const isVerified = owner === "wxn0brP";
+                const isVerified = card.getAttribute("data-verified") === "true";
                 showConfirmation(
                     `Are you sure you want to install ${name}?`,
                     !isVerified,

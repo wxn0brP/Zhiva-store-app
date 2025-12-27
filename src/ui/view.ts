@@ -1,20 +1,24 @@
 import { mountView } from "@wxn0brp/flanker-ui";
 import { findRepoIcon } from "./icon";
-import { fetchZhivaRepos } from "./repo";
 import { Repo } from "./types";
 import { updateInstalled } from "./update/update";
+import { fetchApi } from "../api";
 
 export const zhivaRepoListView = mountView({
     selector: "#zhiva-repo-list",
     queryFunction: () => fetchZhivaRepos(),
     template: (repo: Repo) => `
-        <div class="repo-card" data-id="${repo.id}" data-name="${repo.full_name}" data-owner="${repo.owner.login}">
+        <div
+            class="repo-card"
+            data-name="${repo.full_name}"
+            data-verified="${repo.verified}"
+        >
             <div class="repo-header">
                 <div class="repo-icon">
                     <div class="icon-placeholder">📦</div>
                 </div>
                 <div class="repo-info">
-                    <h3><a href="${repo.html_url}">${repo.full_name}</a></h3>
+                    <h3><a href="https://github.com/${repo.full_name}">${repo.full_name}</a></h3>
                     <span class="installed"></span>
                 </div>
             </div>
@@ -30,7 +34,7 @@ export const zhivaRepoListView = mountView({
     onData: (repos) => {
         repos.forEach(async (repo: Repo) => {
             const iconUrl = await findRepoIcon(repo);
-            const card = qs(`.repo-card[data-id="${repo.id}"] .repo-icon`);
+            const card = qs(`.repo-card[data-name="${repo.full_name}"] .repo-icon`);
             if (!card) return;
             if (!iconUrl) return;
 
@@ -48,3 +52,10 @@ export const zhivaRepoListView = mountView({
     },
     sort: (a, b) => b.stargazers_count - a.stargazers_count,
 });
+
+async function fetchZhivaRepos() {
+    const res = await fetchApi("apps");
+    const data = await res.json();
+    if (data.err) return [];
+    return data.apps;
+}
