@@ -2,7 +2,7 @@ import { Valthera } from "@wxn0brp/db";
 import { createLock } from "@wxn0brp/db-lock";
 import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
 import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
-import { execSync } from "child_process";
+import { $ } from "bun";
 
 app.static("public");
 app.static("dist");
@@ -11,16 +11,16 @@ await oneWindow();
 const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
 const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
 
-apiRouter.get("/install", (req) => {
+apiRouter.get("/install", async (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${zhivaBin} install ${app}`, { stdio: "inherit" });
+    await $`${zhivaBin} install ${app}`;
 
     return { err: false };
 });
 
-apiRouter.get("/uninstall", (req) => {
+apiRouter.get("/uninstall", async (req) => {
     let app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -29,7 +29,7 @@ apiRouter.get("/uninstall", (req) => {
 
     if (!exists) return { err: true, msg: "App not found" };
 
-    execSync(`${zhivaBin} uninstall ${app}`, { stdio: "inherit" });
+    await $`${zhivaBin} uninstall ${app}`, { stdio: "inherit" };
 
     return { err: false };
 });
@@ -39,15 +39,15 @@ apiRouter.get("/installed", async () => {
     return { apps: apps.map((app) => app.name) };
 });
 
-apiRouter.get("/start", (req) => {
+apiRouter.get("/start", async (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    execSync(`${zhivaBin} start ${app}`, { stdio: "inherit" });
+    await $`${zhivaBin} start ${app}`;
     return { err: false };
 });
 
-apiRouter.get("/open-gh", (req) => {
+apiRouter.get("/open-gh", async (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
@@ -66,31 +66,33 @@ apiRouter.get("/open-gh", (req) => {
             console.warn("Unsupported platform:", process.platform);
             return { err: true, msg: "Unsupported platform" };
     }
-    execSync(`${cmd} https://github.com/${app}`, { stdio: "inherit" });
+    await $`${cmd} https://github.com/${app}`;
     return { err: false };
 });
 
-apiRouter.get("/update", () => {
+apiRouter.get("/update", async () => {
     try {
-        execSync(`${zhivaBin} update`, { stdio: "inherit" });
+        await $`${zhivaBin} update`;
         return { err: false };
     } catch (error) {
         return { err: true, msg: error.message };
     }
 });
 
-apiRouter.get("/get-updates", () => {
+apiRouter.get("/get-updates", async () => {
     try {
-        const data = execSync(`${zhivaBin} update --json`).toString();
+        const { stdout } = await $`${zhivaBin} update --json`;
+        const data = stdout.toString();
         return { err: false, updates: JSON.parse(data) };
     } catch (error) {
         return { err: true, msg: error.message };
     }
 });
 
-apiRouter.get("/apps", () => {
+apiRouter.get("/apps", async () => {
     try {
-        const data = execSync(`${zhivaBin} search --json`).toString();
+        const { stdout } = await $`${zhivaBin} search --json`;
+        const data = stdout.toString();
         return { err: false, apps: JSON.parse(data) };
     } catch (error) {
         return { err: true, msg: error.message };
