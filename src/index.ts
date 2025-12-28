@@ -46,29 +46,6 @@ apiRouter.get("/start", async (req) => {
     return { err: false };
 });
 
-apiRouter.get("/open-gh", async (req) => {
-    const app = req.query.app;
-    if (!app) return { err: true, msg: "No app specified" };
-
-    let cmd = "";
-    switch (process.platform) {
-        case "linux":
-            cmd = "xdg-open";
-            break;
-        case "win32":
-            cmd = `start ""`;
-            break;
-        case "darwin":
-            cmd = "open";
-            break;
-        default:
-            console.warn("Unsupported platform:", process.platform);
-            return { err: true, msg: "Unsupported platform" };
-    }
-    await $`${cmd} https://github.com/${app}`;
-    return { err: false };
-});
-
 apiRouter.get("/update", async () => {
     try {
         await $`${zhivaBin} update`;

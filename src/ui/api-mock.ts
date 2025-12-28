@@ -31,13 +31,6 @@ export async function mockFetchApi(endpoint: string, options: ZhivaApiOptions = 
                 headers: { "Content-Type": "application/json" }
             });
 
-        case "open-gh":
-            window.open(`https://github.com/${appName}`, "_blank");
-            return new Response(JSON.stringify({ err: false }), {
-                status: 200,
-                headers: { "Content-Type": "application/json" }
-            });
-
         case "uninstall":
         case "update":
             console.warn(`Action "${endpoint}" is not available in browser-only mode. Doing nothing.`);

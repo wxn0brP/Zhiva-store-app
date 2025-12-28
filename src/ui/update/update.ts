@@ -81,14 +81,20 @@ export function updateInstalled() {
         }
 
         card.qs(".open-gh").onclick = () => {
-            fetchApi("open-gh", {}, { app: name });
+            openGH(name);
         }
 
         card.qs("a").onclick = (e) => {
             e.preventDefault();
-            fetchApi("open-gh", {}, { app: name });
+            openGH(name);
         }
     });
+}
+
+function openGH(name: string) {
+    const url = "https://github.com/" + name;
+    if (IS_DESKTOP_APP) (window as any).zhiva_openExternal(url);
+    else window.open(url, "_blank");
 }
 
 const updateAllBtn = qs<HTMLButtonElement>("#update-all-btn");
