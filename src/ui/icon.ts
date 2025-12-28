@@ -14,10 +14,10 @@ export async function findRepoIcon(repo: Repo): Promise<string | null> {
     if (manifest.icon === "default" || (!manifest.icon && manifest.win_icon === "default"))
         return `/zhiva-assets/zhiva.ico`;
     if (manifest.icon || manifest.win_icon)
-        return `${gitRaw}${repo.full_name}/HEAD/${manifest.icon || manifest.win_icon}`;
+        return `${gitRaw}${repo.name}/HEAD/${manifest.icon || manifest.win_icon}`;
 
     for (const path of ICON_PATHS) {
-        const url = gitRaw + repo.full_name + "/HEAD/" + path;
+        const url = gitRaw + repo.name + "/HEAD/" + path;
         try {
             const res = await fetch(url, { method: "HEAD" });
             if (res.ok) return url;

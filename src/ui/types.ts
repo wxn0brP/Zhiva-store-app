@@ -1,7 +1,7 @@
 export interface Repo {
-    full_name: string;
-    description: string | null;
-    stargazers_count: number;
+    name: string;
+    desc: string | null;
+    stars: number;
     verified: boolean;
 }
 

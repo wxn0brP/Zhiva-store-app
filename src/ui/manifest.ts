@@ -17,7 +17,7 @@ export async function loadManifest(name: string) {
 }
 
 export async function getManifest(repo: Repo | string) {
-    const name = typeof repo === "string" ? repo : repo.full_name;
+    const name = typeof repo === "string" ? repo : repo.name;
     const cache = appsManifest[name];
     if (cache) return cache;
     if (cache === null) return {};

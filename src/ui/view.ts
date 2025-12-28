@@ -10,7 +10,7 @@ export const zhivaRepoListView = mountView({
     template: (repo: Repo) => `
         <div
             class="repo-card"
-            data-name="${repo.full_name}"
+            data-name="${repo.name}"
             data-verified="${repo.verified}"
         >
             <div class="repo-header">
@@ -18,11 +18,11 @@ export const zhivaRepoListView = mountView({
                     <div class="icon-placeholder">📦</div>
                 </div>
                 <div class="repo-info">
-                    <h3><a href="https://github.com/${repo.full_name}">${repo.full_name}</a></h3>
+                    <h3><a href="https://github.com/${repo.name}">${repo.name}</a></h3>
                     <span class="installed"></span>
                 </div>
             </div>
-            <p class="repo-description">${repo.description || "No description available."}</p>
+            <p class="repo-description">${repo.desc || "No description available."}</p>
             <div class="repo-actions">
                 <button class="install">Install</button>
                 <button class="uninstall" style="color: red">UnInstall</button>
@@ -34,7 +34,7 @@ export const zhivaRepoListView = mountView({
     onData: (repos) => {
         repos.forEach(async (repo: Repo) => {
             const iconUrl = await findRepoIcon(repo);
-            const card = qs(`.repo-card[data-name="${repo.full_name}"] .repo-icon`);
+            const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
             if (!card) return;
             if (!iconUrl) return;
 
