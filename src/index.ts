@@ -6,7 +6,6 @@ import { $ } from "bun";
 
 app.static("public");
 app.static("dist");
-await oneWindow();
 
 const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
 const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
@@ -98,3 +97,5 @@ apiRouter.get("/apps", async () => {
         return { err: true, msg: error.message };
     }
 });
+
+oneWindow();
