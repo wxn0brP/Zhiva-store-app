@@ -10,7 +10,7 @@ export function updateInstalled() {
 
         const installFn = () => fetchApi("install", {}, { app: name });
 
-        const installed = IS_DESKTOP_APP ? zhivaInstalled.get().includes(name) : true;
+        const installed = zhivaInstalled.get().includes(name);
         const installedEl = card.qs(".installed");
         if (installedEl)
             installedEl.innerHTML = installed ? "💜 Installed" : "❌ Not Installed";
@@ -18,11 +18,8 @@ export function updateInstalled() {
         const installBtn = card.qs<HTMLButtonElement>(".install");
         const uninstallBtn = card.qs<HTMLButtonElement>(".uninstall");
 
-        if (installed) {
-            installBtn.innerHTML = IS_DESKTOP_APP ? "Update" : "Install";
-            if (!IS_DESKTOP_APP) {
-                installBtn.title = "The browser cannot access the application state";
-            }
+        if (installed && IS_DESKTOP_APP) {
+            installBtn.innerHTML = "Install";
             installBtn.onclick = async () => {
                 installBtn.disabled = true;
                 installBtn.textContent = "Updating...";
@@ -35,10 +32,7 @@ export function updateInstalled() {
             }
 
             uninstallBtn.style.display = "";
-            if (!IS_DESKTOP_APP) {
-                uninstallBtn.disabled = true;
-                uninstallBtn.title = DISABLED_TITLE;
-            }
+
             uninstallBtn.onclick = () => {
                 if (installBtn.disabled) return;
                 showConfirmation(
@@ -74,7 +68,7 @@ export function updateInstalled() {
         }
 
         const startBtn = card.qs<HTMLButtonElement>(".start");
-        startBtn.style.display = installed ? "" : "none";
+        startBtn.style.display = installed || !IS_DESKTOP_APP ? "" : "none";
 
         startBtn.onclick = () => {
             fetchApi("start", {}, { app: name });

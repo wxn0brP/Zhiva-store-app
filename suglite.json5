@@ -1,0 +1,13 @@
+{
+    "cmd": "bun run build",
+    "watch": [
+        "src"
+    ],
+    server: 31446,
+    server_map: {
+        dir: {
+            "/": "public",
+            "-/": "dist"
+        }
+    }
+}
