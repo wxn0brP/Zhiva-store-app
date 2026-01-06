@@ -32,7 +32,6 @@ export function updateInstalled() {
             }
 
             uninstallBtn.style.display = "";
-
             uninstallBtn.onclick = () => {
                 if (installBtn.disabled) return;
                 showConfirmation(
@@ -46,7 +45,7 @@ export function updateInstalled() {
                 )
             }
         } else {
-            installBtn.innerHTML = "";
+            installBtn.innerHTML = "Install";
             installBtn.onclick = () => {
                 const isVerified = card.getAttribute("data-verified") === "true";
                 showConfirmation(
