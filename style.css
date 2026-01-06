@@ -5,8 +5,11 @@
 }
 
 :root {
-    --txt: #fff;
-    --back: #111;
+    --txt: #ededed;
+    --back: #050505;
+    --bg-card: #121212;
+    --bg-card-hover: #1e1e1e;
+    --border-color: #2a2a2a;
     --accent: #8a2be2;
     --accentRGB: 138, 43, 226;
 }
@@ -21,10 +24,10 @@ body {
 }
 
 header {
-    background-color: #1a1a1a;
+    background-color: #0a0a0a;
     padding: 1rem;
     text-align: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color);
 }
 
 main {
@@ -32,10 +35,10 @@ main {
 }
 
 footer {
-    background-color: #1a1a1a;
+    background-color: #0a0a0a;
     padding: 1rem;
     text-align: center;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border-color);
     margin-top: auto;
 }
 
@@ -57,7 +60,7 @@ a:hover {
 }
 
 button {
-    background-color: #222;
+    background-color: var(--back);
     border: 1px solid darkviolet;
     border-radius: 0.5rem;
     color: var(--txt);
@@ -69,10 +72,12 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
 }
 
 button:hover {
-    background-color: #333;
+    background-color: rgba(var(--accentRGB), 0.5);
+    transform: translateY(-3px);
 }
 
 button:disabled {
@@ -85,13 +90,19 @@ h3 {
 }
 
 .repo-card {
-    background-color: #1c1c1c;
-    border: 1px solid #333;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: all 0.2s;
+}
+
+.repo-card:hover {
+    background-color: var(--bg-card-hover);
+    transform: translateY(-3px);
 }
 
 .repo-header {
@@ -154,9 +165,9 @@ h3 {
 }
 
 .modal-content {
-    background-color: #2a2a2a;
+    background-color: var(--bg-card);
     padding: 20px;
-    border: 1px solid #555;
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     width: 80%;
     max-width: 400px;
@@ -176,6 +187,6 @@ h3 {
 }
 
 #modal-cancel {
-    background-color: #555;
-    border-color: #555;
+    background-color: var(--back);
+    border-color: var(--back);
 }
