@@ -19,7 +19,7 @@ export function updateInstalled() {
         const uninstallBtn = card.qs<HTMLButtonElement>(".uninstall");
 
         if (installed && IS_DESKTOP_APP) {
-            installBtn.innerHTML = "Install";
+            installBtn.innerHTML = "Update";
             installBtn.onclick = async () => {
                 installBtn.disabled = true;
                 installBtn.textContent = "Updating...";
@@ -46,7 +46,7 @@ export function updateInstalled() {
                 )
             }
         } else {
-            installBtn.innerHTML = "Install";
+            installBtn.innerHTML = "";
             installBtn.onclick = () => {
                 const isVerified = card.getAttribute("data-verified") === "true";
                 showConfirmation(
