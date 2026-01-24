@@ -20,7 +20,7 @@
 		"@wxn0brp/db": "*",
 		"@wxn0brp/db-lock": "^0.0.2",
 		"@wxn0brp/flanker-dialog": "^0.0.5",
-		"@wxn0brp/flanker-ui": "^0.4.6",
+		"@wxn0brp/flanker-ui": "^0.5.0",
 		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
 		"typescript": "*"
 	}
