@@ -83,11 +83,6 @@ export function updateInstalled() {
         card.qs(".open-gh").onclick = () => {
             openGH(name);
         }
-
-        card.qs("a").onclick = (e) => {
-            e.preventDefault();
-            openGH(name);
-        }
     });
 }
 
