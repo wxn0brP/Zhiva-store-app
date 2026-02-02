@@ -1,0 +1,25 @@
+header {
+    background-color: #0a0a0a;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+main {
+    flex-grow: 1;
+}
+
+footer {
+    background-color: #0a0a0a;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+#zhiva-repo-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
