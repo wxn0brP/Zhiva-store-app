@@ -1,0 +1,38 @@
+:root {
+    --txt: #ededed;
+    --back: #050505;
+    --bg-card: #121212;
+    --bg-card-hover: #1e1e1e;
+    --border-color: #2a2a2a;
+    --accent: #8a2be2;
+    --accentRGB: 138, 43, 226;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--back);
+    color: var(--txt);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a,
+a:visited {
+    color: #8a2be2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h3 {
+    margin-bottom: 5px;
+}

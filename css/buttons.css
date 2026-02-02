@@ -1,0 +1,25 @@
+button {
+    background-color: var(--back);
+    border: 1px solid darkviolet;
+    border-radius: 0.5rem;
+    color: var(--txt);
+    padding: 0 1rem;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background-color 0.2s;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background-color: rgba(var(--accentRGB), 0.5);
+    transform: translateY(-3px);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
