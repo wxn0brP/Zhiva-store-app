@@ -3,6 +3,7 @@ import { createLock } from "@wxn0brp/db-lock";
 import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
 import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
 import { $ } from "bun";
+import { join } from "path";
 
 app.static("public");
 app.static("dist");
@@ -70,6 +71,35 @@ apiRouter.get("/apps", async () => {
         const { stdout } = await $`${zhivaBin} search --json`;
         const data = stdout.toString();
         return { err: false, apps: JSON.parse(data) };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+});
+
+apiRouter.get("/open-dir", async (req) => {
+    try {
+        let appName = req.query.app;
+        if (!appName) return { err: true, msg: "No app specified" };
+
+        if (!appName.includes("/")) appName = `wxn0brP/${appName}`;
+
+        const path = join(process.env.ZHIVA_ROOT, "apps", appName);
+
+        switch (process.platform) {
+            case "win32":
+                await $`explorer "${path}"`;
+                break;
+            case "darwin":
+                await $`open "${path}"`;
+                break;
+            case "linux":
+                await $`xdg-open "${path}"`;
+                break;
+            default:
+                return { err: true, msg: "Unsupported platform" };
+        }
+
+        return { err: false };
     } catch (error) {
         return { err: true, msg: error.message };
     }

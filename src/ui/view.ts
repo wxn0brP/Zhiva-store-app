@@ -28,6 +28,7 @@ export const zhivaRepoListView = mountView({
                 <button class="uninstall" style="color: red">UnInstall</button>
                 <button class="start">Start</button>
                 <button class="open-gh">Open on GitHub</button>
+                <button class="open-dir">Open in File Explorer</button>
             </div>
         </div>
     `,

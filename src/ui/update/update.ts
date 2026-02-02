@@ -17,6 +17,7 @@ export function updateInstalled() {
 
         const installBtn = card.qs<HTMLButtonElement>(".install");
         const uninstallBtn = card.qs<HTMLButtonElement>(".uninstall");
+        const openInFileExplorerBtn = card.qs<HTMLButtonElement>(".open-dir");
 
         if (installed && IS_DESKTOP_APP) {
             installBtn.innerHTML = "Update";
@@ -44,6 +45,11 @@ export function updateInstalled() {
                     }
                 )
             }
+
+            openInFileExplorerBtn.style.display = "";
+            openInFileExplorerBtn.onclick = () => {
+                openInFileExplorer(name);
+            }
         } else {
             installBtn.innerHTML = "Install";
             installBtn.onclick = () => {
@@ -64,6 +70,7 @@ export function updateInstalled() {
             }
 
             uninstallBtn.style.display = "none";
+            openInFileExplorerBtn.style.display = "none";
         }
 
         const startBtn = card.qs<HTMLButtonElement>(".start");
@@ -120,3 +127,7 @@ updateAllBtn.onclick = async () => {
     zhivaInstalled.set(zhivaInstalledData.apps);
     updateInstalled();
 };
+
+function openInFileExplorer(name: string) {
+    fetchApi("open-dir", {}, { app: name });
+}
