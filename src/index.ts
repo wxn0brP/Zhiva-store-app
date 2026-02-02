@@ -3,6 +3,7 @@ import { createLock } from "@wxn0brp/db-lock";
 import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
 import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
 import { $ } from "bun";
+import { exec } from "child_process";
 import { join } from "path";
 
 app.static("public");
@@ -87,7 +88,7 @@ apiRouter.get("/open-dir", async (req) => {
 
         switch (process.platform) {
             case "win32":
-                await $`explorer "${path}"`;
+                exec(`explorer "${path}"`);
                 break;
             case "darwin":
                 await $`open "${path}"`;
