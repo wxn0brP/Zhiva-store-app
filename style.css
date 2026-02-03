@@ -1,0 +1,62 @@
+#FD-message div {
+  position: absolute;
+  max-width: 70%;
+  top: -10rem;
+  left: 50%;
+  transition: 0.7s ease;
+  font-size: 1.6rem;
+  border-radius: 1rem;
+  letter-spacing: 2px;
+  padding: 7px 12px;
+  transform: translateX(-50%);
+  z-index: 99;
+  cursor: pointer;
+}
+#FD-message div.uiMsg {
+  background-color: var(--back);
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 10px 5px rgba(var(--accentRGB), 0.5);
+}
+
+#FD-prompt {
+  text-align: center;
+}
+#FD-prompt > div {
+  position: absolute;
+  min-width: 200px;
+  max-width: 70%;
+  top: 50%;
+  left: 50%;
+  border-radius: 1rem;
+  padding: 12px;
+  transform: translate(-50%, -50%);
+  z-index: 99;
+  border: 2px solid var(--accent);
+  backdrop-filter: blur(4px);
+}
+#FD-prompt p {
+  font-size: 1.2rem;
+}
+#FD-prompt input,
+#FD-prompt button,
+#FD-prompt select {
+  border-radius: 1rem;
+  padding: 7px 12px;
+  border: 2px solid var(--accent);
+  background-color: var(--back);
+  color: var(--txt);
+  margin-top: 5px;
+}
+#FD-prompt option {
+  background-color: var(--back);
+  color: var(--txt);
+}
+#FD-prompt button {
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+#FD-prompt button:hover {
+  background-color: rgba(var(--accentRGB), 0.5);
+}
+
+/*# sourceMappingURL=style.css.map */
