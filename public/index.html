@@ -10,12 +10,15 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/repo-cards.css">
     <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="browser.css">
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="https://wxn0brp.github.io/paper/style.css">
 </head>
 
 <body>
     <header>
+        <button id="open-settings">⚙️</button>
         <h1>Zhiva Store</h1>
         <div id="update-container">
             <div>
@@ -23,6 +26,26 @@
                 <button id="update-all-btn">Update All</button>
             </div>
             <div id="update-status" style="margin-top: 5px;"></div>
+        </div>
+        <div id="settings" style="display: none;">
+            <h3>Shortcut Preferences</h3>
+            <div class="shortcut-options">
+                <label>
+                    <input type="checkbox" data-id="shortcut-menu">
+                    <span>Menu</span>
+                </label>
+                <label>
+                    <input type="checkbox" data-id="shortcut-desktop">
+                    <span>Desktop</span>
+                </label>
+                <label>
+                    <input type="checkbox" data-id="shortcut-not">
+                    <span>Not</span>
+                </label>
+            </div>
+            <div class="shortcut-actions">
+                <button id="save-shortcuts-btn">Save</button>
+            </div>
         </div>
     </header>
     <main>
@@ -39,6 +62,20 @@
                 Warning:
                 This application is unverified and has not been reviewed for security.
                 Installing it may pose a risk.
+            </div>
+            <div class="shortcut-options">
+                <label>
+                    <input type="checkbox" data-id="shortcut-menu">
+                    <span>Menu</span>
+                </label>
+                <label>
+                    <input type="checkbox" data-id="shortcut-desktop">
+                    <span>Desktop</span>
+                </label>
+                <label>
+                    <input type="checkbox" data-id="shortcut-not">
+                    <span>Not</span>
+                </label>
             </div>
             <div class="modal-buttons">
                 <button id="modal-confirm">Confirm</button>

@@ -16,7 +16,12 @@ apiRouter.get("/install", async (req) => {
     const app = req.query.app;
     if (!app) return { err: true, msg: "No app specified" };
 
-    await $`${zhivaBin} install ${app}`;
+    let prefs = "";
+    const shortcut = req.query.shortcut;
+    if (shortcut)
+        prefs = "-s " + shortcut;
+
+    await $`${zhivaBin} install ${app} ${prefs}`;
 
     return { err: false };
 });
@@ -100,6 +105,29 @@ apiRouter.get("/open-dir", async (req) => {
                 return { err: true, msg: "Unsupported platform" };
         }
 
+        return { err: false };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+});
+
+apiRouter.get("/shortcut-pref", async () => {
+    try {
+        const data = await db.findOne<any>("pref", { _id: "shortcut" });
+        return { err: false, data: data?.v };
+    } catch (error) {
+        return { err: true, msg: error.message };
+    }
+});
+
+apiRouter.post("/shortcut-pref", async (req) => {
+    try {
+        const data = req.body.data;
+        if (!data) {
+            await db.removeOne("pref", { _id: "shortcut" });
+            return { err: false }
+        }
+        await db.updateOneOrAdd("pref", { _id: "shortcut" }, { v: data });
         return { err: false };
     } catch (error) {
         return { err: true, msg: error.message };

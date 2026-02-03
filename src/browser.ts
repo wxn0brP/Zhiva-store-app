@@ -1,9 +1,10 @@
 import "@wxn0brp/flanker-dialog/style.css";
 import "@wxn0brp/flanker-ui/html";
+import { fetchApi } from "./api";
+import { initSettings } from "./ui/settings";
 import { checkForUpdates } from "./ui/update/check";
 import { updateInstalled } from "./ui/update/update";
 import { appsToUpdateCount, updateStatus, zhivaInstalled } from "./ui/vars";
-import { fetchApi } from "./api";
 import { zhivaRepoListView } from "./ui/view";
 
 fetchApi("installed").then(res => res.json()).then((data) => {
@@ -13,6 +14,7 @@ fetchApi("installed").then(res => res.json()).then((data) => {
 });
 
 checkForUpdates();
+initSettings();
 
 appsToUpdateCount.subscribe(count => {
     if (count < 0) return appsToUpdateCount.set(0);

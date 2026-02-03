@@ -1,6 +1,6 @@
 import { uiMsg } from "@wxn0brp/flanker-dialog";
 import { incrementCell, updateCell } from "@wxn0brp/flanker-ui/storeUtils";
-import { showConfirmation } from "../confirm";
+import { showConfirmation, store } from "../confirm";
 import { appsToUpdateCount, DISABLED_TITLE, zhivaInstalled } from "../vars";
 import { fetchApi, IS_DESKTOP_APP } from "../../api";
 
@@ -8,7 +8,23 @@ export function updateInstalled() {
     document.querySelectorAll<HTMLDivElement>(".repo-card").forEach((card) => {
         const name = card.getAttribute("data-name");
 
-        const installFn = () => fetchApi("install", {}, { app: name });
+        const installFn = () => {
+            let pref = "";
+
+            if (store.desktop.get()) pref += "d";
+            if (store.menu.get()) pref += "m";
+            if (store.not.get()) pref = "n";
+
+            const query: Record<string, string> = {
+                app: name
+            };
+
+            if (pref) query.shortcut = pref;
+
+            console.log("Installing", name, query);
+
+            fetchApi("install", {}, query);
+        }
 
         const installed = zhivaInstalled.get().includes(name);
         const installedEl = card.qs(".installed");
@@ -37,7 +53,6 @@ export function updateInstalled() {
                 if (installBtn.disabled) return;
                 showConfirmation(
                     `Are you sure you want to uninstall ${name}?`,
-                    false,
                     async () => {
                         await fetchApi("uninstall", {}, { app: name });
                         updateCell(zhivaInstalled, (apps) => apps.filter((app) => app !== name));
@@ -56,7 +71,6 @@ export function updateInstalled() {
                 const isVerified = card.getAttribute("data-verified") === "true";
                 showConfirmation(
                     `Are you sure you want to install ${name}?`,
-                    !isVerified,
                     async () => {
                         installBtn.disabled = true;
                         installBtn.textContent = "Installing...";
@@ -65,6 +79,10 @@ export function updateInstalled() {
                         installBtn.textContent = "Install";
                         installBtn.disabled = false;
                         updateInstalled();
+                    },
+                    {
+                        showWarning: !isVerified,
+                        shortcutOptions: true
                     }
                 );
             }
