@@ -13,7 +13,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun build src/browser.ts --minify --outdir dist --target browser --sourcemap && bun run copy:flanker",
-		"copy:flanker": "cp -r node_modules/@wxn0brp/flanker-dialog/dist/style.css dist/style.css",
+		"copy:flanker": "bun run src/copy-flanker.ts",
 		"start": "bun run src/index.ts"
 	},
 	"devDependencies": {
