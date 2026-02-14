@@ -1,4 +1,4 @@
-import { uiMsg } from "@wxn0brp/flanker-dialog";
+import { uiMsg } from "@wxn0brp/flanker-dialog/msg/index";
 import { fetchApiJson, fetchApiPost } from "@wxn0brp/zhiva-base-lib/front/api";
 import { IS_DESKTOP_APP } from "../api";
 import { initCdfCheckBox } from "./cdf";

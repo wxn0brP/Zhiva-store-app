@@ -1,4 +1,4 @@
-import { uiMsg } from "@wxn0brp/flanker-dialog";
+import { uiMsg } from "@wxn0brp/flanker-dialog/msg/index";
 import { incrementCell, updateCell } from "@wxn0brp/flanker-ui/storeUtils";
 import { showConfirmation, store } from "../confirm";
 import { appsToUpdateCount, DISABLED_TITLE, zhivaInstalled } from "../vars";
