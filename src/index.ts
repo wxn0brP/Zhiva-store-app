@@ -1,4 +1,4 @@
-import { Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db/valthera";
 import { createLock } from "@wxn0brp/db-lock";
 import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
 import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
@@ -31,7 +31,12 @@ apiRouter.get("/uninstall", async (req) => {
     if (!app) return { err: true, msg: "No app specified" };
 
     if (!app.includes("/")) app = `wxn0brP/${app}`;
-    const exists = db.findOne("apps", { name: app });
+    const exists = db.findOne({
+        collection: "apps",
+        search: {
+            name: app
+        }
+    });
 
     if (!exists) return { err: true, msg: "App not found" };
 
@@ -41,7 +46,7 @@ apiRouter.get("/uninstall", async (req) => {
 });
 
 apiRouter.get("/installed", async () => {
-    const apps = await db.find("apps");
+    const apps = await db.find({ collection: "apps" });
     return { apps: apps.map((app) => app.name) };
 });
 
@@ -113,7 +118,12 @@ apiRouter.get("/open-dir", async (req) => {
 
 apiRouter.get("/shortcut-pref", async () => {
     try {
-        const data = await db.findOne<any>("pref", { _id: "shortcut" });
+        const data = await db.findOne<any>({
+            collection: "pref",
+            search: {
+                _id: "shortcut"
+            }
+        });
         return { err: false, data: data?.v };
     } catch (error) {
         return { err: true, msg: error.message };
@@ -124,10 +134,23 @@ apiRouter.post("/shortcut-pref", async (req) => {
     try {
         const data = req.body.data;
         if (!data) {
-            await db.removeOne("pref", { _id: "shortcut" });
+            await db.removeOne({
+                collection: "pref",
+                search: {
+                    _id: "shortcut"
+                }
+            });
             return { err: false }
         }
-        await db.updateOneOrAdd("pref", { _id: "shortcut" }, { v: data });
+        await db.updateOneOrAdd({
+            collection: "pref",
+            search: {
+                _id: "shortcut"
+            },
+            updater: {
+                v: data
+            }
+        });
         return { err: false };
     } catch (error) {
         return { err: true, msg: error.message };
