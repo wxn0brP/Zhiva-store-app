@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@types/bun": "*",
-		"@wxn0brp/db": "^0.70.0",
+		"@wxn0brp/db": "^0.90.0",
 		"@wxn0brp/db-lock": "^0.0.7",
 		"@wxn0brp/flanker-dialog": "^0.1.0",
 		"@wxn0brp/flanker-ui": "^0.5.1",
