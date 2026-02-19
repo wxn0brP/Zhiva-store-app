@@ -1,28 +1,28 @@
 {
-	"name": "store-app",
-	"version": "0.0.1",
-	"main": "src/index.ts",
-	"description": "",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/wxn0brP/Zhiva-store-app.git"
-	},
-	"homepage": "https://github.com/wxn0brP/Zhiva-store-app",
-	"author": "wxn0brP",
-	"license": "MIT",
-	"type": "module",
-	"scripts": {
-		"build": "bun build src/browser.ts --minify --outdir dist --target browser --sourcemap && bun run copy:flanker",
-		"copy:flanker": "bun run src/copy-flanker.ts",
-		"start": "bun run src/index.ts"
-	},
-	"devDependencies": {
-		"@types/bun": "*",
-		"@wxn0brp/db": "^0.70.0",
-		"@wxn0brp/db-lock": "^0.0.7",
-		"@wxn0brp/flanker-dialog": "^0.1.0",
-		"@wxn0brp/flanker-ui": "^0.5.1",
-		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
-		"typescript": "*"
-	}
+    "name": "store-app",
+    "version": "0.0.1",
+    "main": "src/index.ts",
+    "description": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wxn0brP/Zhiva-store-app.git"
+    },
+    "homepage": "https://github.com/wxn0brP/Zhiva-store-app",
+    "author": "wxn0brP",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "build": "bun build src/browser.ts --minify --outdir dist --target browser --sourcemap && bun run copy:flanker",
+        "copy:flanker": "bun run src/copy-flanker.ts",
+        "start": "bun run src/index.ts"
+    },
+    "devDependencies": {
+        "@types/bun": "*",
+        "@wxn0brp/db": "^0.90.0",
+        "@wxn0brp/db-lock": "^0.0.9",
+        "@wxn0brp/flanker-dialog": "^0.1.0",
+        "@wxn0brp/flanker-ui": "^0.5.1",
+        "@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
+        "typescript": "*"
+    }
 }
