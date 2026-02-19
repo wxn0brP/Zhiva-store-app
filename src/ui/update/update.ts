@@ -23,7 +23,7 @@ export function updateInstalled() {
 
             console.log("Installing", name, query);
 
-            fetchApi("install", {}, query);
+            return fetchApi("install", {}, query);
         }
 
         const installed = zhivaInstalled.get().includes(name);
