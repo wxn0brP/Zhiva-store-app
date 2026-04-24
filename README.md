@@ -1,6 +1,6 @@
 # Zhiva Store App
 
-[![Install via Zhiva](https://img.shields.io/badge/Zhiva-install-blue)](zhiva://install/Zhiva-store-app)
+[![Install via Zhiva](https://img.shields.io/badge/Zhiva-install-blue)](https://wxn0brp.github.io/Zhiva-page/i#app=Zhiva-store-app)
 
 ## Installation:
 
