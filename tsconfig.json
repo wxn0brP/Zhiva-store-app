@@ -8,6 +8,8 @@
 		"skipLibCheck": true,
 		"outDir": "./dist",
 		"declaration": true,
+		"strict": false,
+		"rootDir": "./src",
 		"types": [
 			"@types/bun",
 			"@wxn0brp/flanker-ui",

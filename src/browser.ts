@@ -1,3 +1,4 @@
+// @ts-ignore
 import "@wxn0brp/flanker-dialog/style.css";
 import "@wxn0brp/flanker-ui/html";
 import { fetchApi } from "./api";
