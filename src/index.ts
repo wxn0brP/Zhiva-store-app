@@ -6,8 +6,9 @@ import { $ } from "bun";
 import { exec } from "child_process";
 import { join } from "path";
 
-app.static("public");
-app.static("dist");
+app.static("public", undefined, { errorIfDirNotFound: false });
+app.static("dist", undefined, { errorIfDirNotFound: false });
+app.static(".");
 
 const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
 const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
