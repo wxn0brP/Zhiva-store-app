@@ -1,6 +1,6 @@
 {
-    "icon": "public/favicon.png",
-    "win_icon": "public/app.ico",
+    "icon": "favicon.png",
+    "win_icon": "app.ico",
     "branch": "gh-pages",
     "name": "Zhiva Store",
     "description": "Zhiva Store",
