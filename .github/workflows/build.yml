@@ -32,6 +32,8 @@ jobs:
           mkdir gh-pages-dist
           cp -r public/* gh-pages-dist/
           cp -r dist/* gh-pages-dist/
+          cp zhiva.json gh-pages-dist/zhiva.json
+          cp package.zhiva.json gh-pages-dist/package.json
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4

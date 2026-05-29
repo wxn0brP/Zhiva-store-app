@@ -1,0 +1,17 @@
+{
+	"name": "store-app",
+	"version": "0.0.1",
+	"main": "src/index.ts",
+	"description": "",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wxn0brP/Zhiva-store-app.git"
+	},
+	"homepage": "https://github.com/wxn0brP/Zhiva-store-app",
+	"author": "wxn0brP",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"start": "bun run src/index.ts"
+	}
+}
