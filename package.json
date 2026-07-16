@@ -23,6 +23,6 @@
 		"@wxn0brp/flanker-dialog": "^0.1.0",
 		"@wxn0brp/flanker-ui": "^0.5.1",
 		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
-		"typescript": "^6"
+		"typescript": "^7.0.0"
 	}
 }
