@@ -1,5 +1,5 @@
+import { createLockPlugin } from "@wxn0brp/db-lock";
 import { Valthera } from "@wxn0brp/db/valthera";
-import { createLock } from "@wxn0brp/db-lock";
 import { apiRouter } from "@wxn0brp/zhiva-base-lib/api";
 import { app, oneWindow } from "@wxn0brp/zhiva-base-lib/server";
 import { $ } from "bun";
@@ -15,7 +15,8 @@ app.static("dist", undefined, {
 app.static(".");
 
 const zhivaBin = process.env.ZHIVA_ROOT + "/bin/zhiva";
-const db = createLock(new Valthera(process.env.ZHIVA_ROOT + "/master.db"));
+const db = new Valthera(process.env.ZHIVA_ROOT + "/master.db");
+db.plugin(createLockPlugin());
 
 apiRouter.get("/install", async req => {
 	const app = req.query.app;
