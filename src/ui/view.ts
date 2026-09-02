@@ -5,9 +5,9 @@ import { updateInstalled } from "./update/update";
 import { fetchApi } from "../api";
 
 export const zhivaRepoListView = mountView({
-    selector: "#zhiva-repo-list",
-    queryFunction: () => fetchZhivaRepos(),
-    template: (repo: Repo) => `
+	selector: "#zhiva-repo-list",
+	queryFunction: () => fetchZhivaRepos(),
+	template: (repo: Repo) => `
 <div
     class="repo-card"
     data-name="${repo.name}"
@@ -22,10 +22,14 @@ export const zhivaRepoListView = mountView({
                 <h3>
                     <a href="https://github.com/${repo.name}" target="_blank">${repo.name}</a>
                 </h3>
-                ${repo.verified ? `<span class="badge verified" title="Verified by Zhiva Team">
+                ${
+									repo.verified
+										? `<span class="badge verified" title="Verified by Zhiva Team">
                     <img src="icons/verified.svg" width="12" height="12" alt="Verified">
                     <span>Verified</span>
-                </span>` : ''}
+                </span>`
+										: ""
+								}
             </div>
             <span class="installed"></span>
         </div>
@@ -53,31 +57,34 @@ export const zhivaRepoListView = mountView({
     </div>
 </div>
     `,
-    onData: (repos) => {
-        repos.forEach(async (repo: Repo) => {
-            const iconUrl = await findRepoIcon(repo);
-            const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
-            if (!card) return;
-            if (!iconUrl) return;
+	onData: repos => {
+		repos.forEach(async (repo: Repo) => {
+			const iconUrl = await findRepoIcon(repo);
+			const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
+			if (!card) return;
+			if (!iconUrl) return;
 
-            const img = document.createElement("img");
-            img.src = iconUrl;
-            img.alt = `📦`;
-            img.width = 32;
-            img.height = 32;
-            card.innerHTML = "";
-            card.appendChild(img);
-        });
-        setTimeout(() => {
-            updateInstalled();
-        }, 100);
-    },
-    sort: (a, b) => b.stargazers_count - a.stargazers_count,
+			const img = document.createElement("img");
+			img.src = iconUrl;
+			img.alt = `📦`;
+			img.width = 32;
+			img.height = 32;
+			card.innerHTML = "";
+			card.appendChild(img);
+		});
+		updateInstalled();
+	},
+	sort: (a, b) => b.stargazers_count - a.stargazers_count,
 });
 
 async function fetchZhivaRepos() {
-    const res = await fetchApi("apps");
-    const data = await res.json();
-    if (data.err) return [];
-    return data.apps;
+	try {
+		const res = await fetchApi("apps");
+		const data = await res.json();
+		if (data.err) return [];
+		return data.apps;
+	} catch (err) {
+		console.error("fetchZhivaRepos failed", err);
+		return [];
+	}
 }

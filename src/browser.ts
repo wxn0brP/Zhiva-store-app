@@ -8,19 +8,34 @@ import { updateInstalled } from "./ui/update/update";
 import { appsToUpdateCount, updateStatus, zhivaInstalled } from "./ui/vars";
 import { zhivaRepoListView } from "./ui/view";
 
-fetchApi("installed").then(res => res.json()).then((data) => {
-    if (data.err) return;
-    zhivaInstalled.set(data.apps);
-    updateInstalled();
-});
+async function init() {
+	try {
+		const [installedRes] = await Promise.all([
+			fetchApi("installed"),
+			zhivaRepoListView.load(),
+		]);
 
-checkForUpdates();
+		const data = await installedRes.json();
+		if (!data.err) {
+			zhivaInstalled.set(data.apps);
+		}
+		updateInstalled();
+
+		checkForUpdates().catch(err =>
+			console.error("checkForUpdates failed", err),
+		);
+	} catch (err) {
+		console.error("Store initialization failed", err);
+	}
+}
+
+init();
 initSettings();
 
 appsToUpdateCount.subscribe(count => {
-    if (count < 0) return appsToUpdateCount.set(0);
-    if (!count) return updateStatus.innerHTML = "No updates available";
-    updateStatus.innerHTML = `Updates available for: ${count} app${count === 1 ? "" : "s"}.`;
+	if (count < 0) return appsToUpdateCount.set(0);
+	if (!count) return (updateStatus.innerHTML = "No updates available");
+	updateStatus.innerHTML = `Updates available for: ${count} app${count === 1 ? "" : "s"}.`;
 });
 
 zhivaRepoListView.load();

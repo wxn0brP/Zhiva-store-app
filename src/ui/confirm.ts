@@ -9,46 +9,51 @@ const modalCancel = qs<HTMLButtonElement>("#modal-cancel");
 const shortcutOptions = modal.qs(".shortcut-options");
 
 export interface Opts {
-    showWarning: boolean;
-    shortcutOptions: boolean;
+	showWarning: boolean;
+	shortcutOptions: boolean;
 }
 
 export const store = initCdfCheckBox(modal);
 
-export function showConfirmation(message: string, onConfirm: () => void, options: Partial<Opts> = {}) {
-    if (!modal || !modalMessage || !modalWarning || !modalConfirm || !modalCancel) return;
+export function showConfirmation(
+	message: string,
+	onConfirm: () => void,
+	options: Partial<Opts> = {},
+) {
+	if (!modal || !modalMessage || !modalWarning || !modalConfirm || !modalCancel)
+		return;
 
-    const opts = {
-        showWarning: false,
-        ...options
-    }
+	const opts = {
+		showWarning: false,
+		...options,
+	};
 
-    modalMessage.textContent = message;
-    modalWarning.style.display = opts.showWarning ? "block" : "none";
-    modal.style.display = "flex";
+	modalMessage.textContent = message;
+	modalWarning.style.display = opts.showWarning ? "block" : "none";
+	modal.style.display = "flex";
 
-    if (opts.shortcutOptions) {
-        shortcutOptions.style.display = "";
-        store.set(settingsStore.get());
-    } else {
-        shortcutOptions.style.display = "none";
-    }
+	if (opts.shortcutOptions) {
+		shortcutOptions.style.display = "";
+		store.set(settingsStore.get());
+	} else {
+		shortcutOptions.style.display = "none";
+	}
 
-    const confirmHandler = () => {
-        onConfirm();
-        hideModal();
-    }
+	const confirmHandler = () => {
+		onConfirm();
+		hideModal();
+	};
 
-    const cancelHandler = () => {
-        hideModal();
-    }
+	const cancelHandler = () => {
+		hideModal();
+	};
 
-    const hideModal = () => {
-        modal.style.display = "none";
-        modalConfirm.removeEventListener("click", confirmHandler);
-        modalCancel.removeEventListener("click", cancelHandler);
-    }
+	const hideModal = () => {
+		modal.style.display = "none";
+		modalConfirm.removeEventListener("click", confirmHandler);
+		modalCancel.removeEventListener("click", cancelHandler);
+	};
 
-    modalConfirm.addEventListener("click", confirmHandler);
-    modalCancel.addEventListener("click", cancelHandler);
+	modalConfirm.addEventListener("click", confirmHandler);
+	modalCancel.addEventListener("click", cancelHandler);
 }
