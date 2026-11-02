@@ -1,8 +1,9 @@
 import { uiMsg } from "@wxn0brp/flanker-dialog/msg/index";
 import { incrementCell, updateCell } from "@wxn0brp/flanker-ui/storeUtils";
+import { fetchApi, IS_DESKTOP_APP } from "../../api";
+import { log, timer } from "../../log";
 import { showConfirmation, store } from "../confirm";
 import { appsToUpdateCount, DISABLED_TITLE, zhivaInstalled } from "../vars";
-import { fetchApi, IS_DESKTOP_APP } from "../../api";
 
 let isUpdatingAll = false;
 
@@ -10,7 +11,7 @@ export function updateInstalled() {
 	document.querySelectorAll<HTMLDivElement>(".repo-card").forEach(card => {
 		const name = card.getAttribute("data-name");
 
-		const installFn = () => {
+		const installFn = async () => {
 			let pref = "";
 
 			if (store.desktop.get()) pref += "d";
@@ -23,9 +24,35 @@ export function updateInstalled() {
 
 			if (pref) query.shortcut = pref;
 
-			console.log("Installing", name, query);
+			log.info("Z-STORE-5-02", "install start", {
+				app: name,
+				shortcut: pref || null,
+			});
 
-			return fetchApi("install", {}, query);
+			const data = await fetchApi("install", {}, query)
+				.then(res => res.json())
+				.catch((error: any) => ({
+					err: true,
+					msg: error?.message,
+				}));
+
+			if (data.err) {
+				log.error("Z-STORE-5-04", "install failed", {
+					app: name,
+					msg: data.msg,
+				});
+				return {
+					err: true,
+					msg: data.msg,
+				};
+			}
+
+			log.info("Z-STORE-5-02", "install ok", {
+				app: name,
+			});
+			return {
+				err: false,
+			};
 		};
 
 		const installed = zhivaInstalled.get().includes(name);
@@ -42,9 +69,13 @@ export function updateInstalled() {
 			installBtn.onclick = async () => {
 				installBtn.disabled = true;
 				installBtn.textContent = "Updating...";
-				await installFn();
+				const result = await installFn();
 				installBtn.textContent = "Update";
 				installBtn.disabled = false;
+				if (result.err) {
+					uiMsg(`Update failed: ${result.msg ?? "unknown error"}`);
+					return;
+				}
 				uiMsg("💜 Updated");
 				card.clR("has-update");
 				incrementCell(appsToUpdateCount, -1);
@@ -56,13 +87,34 @@ export function updateInstalled() {
 				showConfirmation(
 					`Are you sure you want to uninstall ${name}?`,
 					async () => {
-						await fetchApi(
+						log.info("Z-STORE-5-03", "uninstall start", {
+							app: name,
+						});
+						const data = await fetchApi(
 							"uninstall",
 							{},
 							{
 								app: name,
 							},
-						);
+						)
+							.then(res => res.json())
+							.catch((error: any) => ({
+								err: true,
+								msg: error?.message,
+							}));
+
+						if (data.err) {
+							log.error("Z-STORE-5-04", "uninstall failed", {
+								app: name,
+								msg: data.msg,
+							});
+							uiMsg(`Uninstall failed: ${data.msg ?? "unknown error"}`);
+							return;
+						}
+
+						log.info("Z-STORE-5-03", "uninstall ok", {
+							app: name,
+						});
 						updateCell(zhivaInstalled, apps =>
 							apps.filter(app => app !== name),
 						);
@@ -85,13 +137,17 @@ export function updateInstalled() {
 						if (isUpdatingAll) return;
 						installBtn.disabled = true;
 						installBtn.textContent = "Installing...";
-						await installFn();
+						const result = await installFn();
+						installBtn.textContent = "Install";
+						installBtn.disabled = false;
+						if (result.err) {
+							uiMsg(`Install failed: ${result.msg ?? "unknown error"}`);
+							return;
+						}
 						updateCell(zhivaInstalled, apps => [
 							...apps,
 							name,
 						]);
-						installBtn.textContent = "Install";
-						installBtn.disabled = false;
 						updateInstalled();
 					},
 					{
@@ -108,14 +164,28 @@ export function updateInstalled() {
 		const startBtn = card.qs<HTMLButtonElement>(".start");
 		startBtn.style.display = installed || !IS_DESKTOP_APP ? "" : "none";
 
-		startBtn.onclick = () => {
-			fetchApi(
+		startBtn.onclick = async () => {
+			log.info("Z-STORE-5-03", "start", {
+				app: name,
+			});
+			const data = await fetchApi(
 				"start",
 				{},
 				{
 					app: name,
 				},
-			);
+			)
+				.then(res => res.json())
+				.catch((error: any) => ({
+					err: true,
+					msg: error?.message,
+				}));
+
+			if (data.err)
+				log.error("Z-STORE-5-04", "start failed", {
+					app: name,
+					msg: data.msg,
+				});
 		};
 
 		card.qs(".open-gh").onclick = () => {
@@ -142,9 +212,11 @@ if (!IS_DESKTOP_APP) {
 }
 
 updateAllBtn.onclick = async () => {
+	const elapsed = timer();
 	isUpdatingAll = true;
 	updateAllBtn.disabled = true;
 	updateAllBtn.textContent = "Updating...";
+	log.info("Z-STORE-5-02", "update all start");
 
 	try {
 		const res = await fetchApi("update");
@@ -154,10 +226,17 @@ updateAllBtn.onclick = async () => {
 		updateAllBtn.textContent = "Update All";
 
 		if (data.err) {
+			log.error("Z-STORE-5-04", "update all failed", {
+				msg: data.msg,
+				ms: elapsed(),
+			});
 			uiMsg(`Error updating apps: ${data.msg}`);
 			return;
 		}
 
+		log.info("Z-STORE-5-02", "update all ok", {
+			ms: elapsed(),
+		});
 		uiMsg("💜 Apps updated successfully!");
 		document
 			.querySelectorAll(".repo-card")
@@ -169,8 +248,11 @@ updateAllBtn.onclick = async () => {
 		if (zhivaInstalledData.err) return;
 		zhivaInstalled.set(zhivaInstalledData.apps);
 		updateInstalled();
-	} catch (err) {
-		console.error("updateAll failed", err);
+	} catch (err: any) {
+		log.error("Z-STORE-5-04", "update all failed", {
+			msg: err?.message,
+			ms: elapsed(),
+		});
 		updateAllBtn.disabled = false;
 		updateAllBtn.textContent = "Update All";
 	} finally {
@@ -179,11 +261,14 @@ updateAllBtn.onclick = async () => {
 };
 
 function openInFileExplorer(name: string) {
+	log.debug("Z-STORE-5-03", "open-dir", {
+		app: name,
+	});
 	fetchApi(
 		"open-dir",
 		{},
 		{
 			app: name,
 		},
-	).catch(err => console.error("openInFileExplorer failed", err));
+	).catch(err => log.error("Z-STORE-5-04", "open-dir failed", err));
 }

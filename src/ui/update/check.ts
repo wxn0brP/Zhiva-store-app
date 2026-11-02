@@ -1,7 +1,9 @@
-import { appsToUpdateCount, updateStatus } from "../vars";
 import { fetchApi, IS_DESKTOP_APP } from "../../api";
+import { log, timer } from "../../log";
+import { appsToUpdateCount, updateStatus } from "../vars";
 
 export async function checkForUpdates() {
+	const elapsed = timer();
 	checkUpdatesBtn.disabled = true;
 	updateStatus.innerHTML = "Checking...";
 
@@ -14,7 +16,9 @@ export async function checkForUpdates() {
 		const data = await res.json();
 
 		if (data.err) {
-			console.error(`Error checking for updates: ${data.msg}`);
+			log.error("Z-STORE-5-01", "update check failed", {
+				msg: data.msg,
+			});
 			updateStatus.innerHTML = `<span style="color: red;">Error checking for updates</span>`;
 			return;
 		}
@@ -32,8 +36,16 @@ export async function checkForUpdates() {
 				if (updateBtn) updateBtn.textContent = "Update available";
 			}
 		});
-	} catch (err) {
-		console.error("checkForUpdates failed", err);
+
+		log.info("Z-STORE-5-01", "updates checked", {
+			pending: appsToUpdate.length,
+			apps: appsToUpdate,
+			ms: elapsed(),
+		});
+	} catch (err: any) {
+		log.error("Z-STORE-5-01", "update check failed", {
+			msg: err?.message,
+		});
 		updateStatus.innerHTML = `<span style="color: red;">Error checking for updates</span>`;
 	} finally {
 		checkUpdatesBtn.disabled = !IS_DESKTOP_APP;
@@ -48,6 +60,8 @@ if (!IS_DESKTOP_APP) {
 }
 
 checkUpdatesBtn.onclick = () => {
-	checkForUpdates().catch(err => console.error("checkForUpdates failed", err));
+	checkForUpdates().catch(err =>
+		log.error("Z-STORE-5-01", "update check failed", err),
+	);
 	localStorage.removeItem("reposCache");
 };

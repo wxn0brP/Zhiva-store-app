@@ -1,6 +1,7 @@
 import { uiMsg } from "@wxn0brp/flanker-dialog/msg/index";
 import { fetchApiJson, fetchApiPost } from "@wxn0brp/zhiva-base-lib/front/api";
 import { IS_DESKTOP_APP } from "../api";
+import { log } from "../log";
 import { initCdfCheckBox } from "./cdf";
 
 const settingsContainer = qs<HTMLDivElement>("#settings");
@@ -21,9 +22,15 @@ async function loadPreferences() {
 		store.not.set(false);
 	}
 	if (data.err) {
-		console.error("Failed to load shortcut preferences:", data);
+		log.error("Z-STORE-6-02", "load shortcut preferences failed", {
+			msg: data.msg,
+		});
 		uiMsg(`Error`);
+		return;
 	}
+	log.debug("Z-STORE-6-01", "shortcut preferences loaded", {
+		value: data.data ?? null,
+	});
 }
 
 async function savePreferences() {
@@ -37,10 +44,15 @@ async function savePreferences() {
 		data: prefs,
 	});
 	if (res.err) {
-		console.error("Failed to save shortcut preferences:", res);
+		log.error("Z-STORE-6-02", "save shortcut preferences failed", {
+			msg: res.msg,
+		});
 		uiMsg(`Error`);
 		return;
 	}
+	log.info("Z-STORE-6-01", "shortcut preferences saved", {
+		value: prefs || null,
+	});
 	uiMsg("💜 Preferences saved!");
 	saveButton.disabled = false;
 }

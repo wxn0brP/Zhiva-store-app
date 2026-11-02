@@ -14,7 +14,7 @@ if (existsSync(path)) {
 		copyFileSync(zhivaPath, "dist/style.css");
 		console.log("Copied style.css from ~/.zhiva");
 	} else {
-		await $`bun install @wxn0brp/flanker-dialog`;
+		await $`bun install @wxn0brp/flanker-dialog`.quiet();
 		copyFileSync(path, "dist/style.css");
 		console.log("Installed and copied style.css from node_modules");
 	}

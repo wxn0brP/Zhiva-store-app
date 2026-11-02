@@ -1,8 +1,9 @@
 import { mountView } from "@wxn0brp/flanker-ui";
+import { fetchApi } from "../api";
+import { log, timer } from "../log";
 import { findRepoIcon } from "./icon";
 import { Repo } from "./types";
 import { updateInstalled } from "./update/update";
-import { fetchApi } from "../api";
 
 const listSelector = "#zhiva-repo-list";
 
@@ -60,20 +61,38 @@ export const zhivaRepoListView = mountView({
 </div>
     `,
 	onData: repos => {
-		repos.forEach(async (repo: Repo) => {
-			const iconUrl = await findRepoIcon(repo);
-			const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
-			if (!card) return;
-			if (!iconUrl) return;
+		Promise.allSettled(
+			repos.map(async (repo: Repo) => {
+				const iconUrl = await findRepoIcon(repo);
+				const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
+				if (!card || !iconUrl) return false;
 
-			const img = document.createElement("img");
-			img.src = iconUrl;
-			img.alt = `📦`;
-			img.width = 32;
-			img.height = 32;
-			card.innerHTML = "";
-			card.appendChild(img);
+				const img = document.createElement("img");
+				img.src = iconUrl;
+				img.alt = `📦`;
+				img.width = 32;
+				img.height = 32;
+				card.innerHTML = "";
+				card.appendChild(img);
+				return true;
+			}),
+		).then(results => {
+			const rejected = results.filter(result => result.status === "rejected");
+			const failed = results.filter(
+				result => result.status === "fulfilled" && !result.value,
+			).length;
+
+			for (const result of rejected)
+				log.warn("Z-STORE-4-05", "icon failed", result.reason);
+
+			log.debug("Z-STORE-4-04", "icons resolved", {
+				total: repos.length,
+				applied: repos.length - failed - rejected.length,
+				failed,
+				rejected: rejected.length,
+			});
 		});
+
 		updateInstalled();
 	},
 	sort: (a, b) => b.stargazers_count - a.stargazers_count,
@@ -86,7 +105,9 @@ export const zhivaRepoListView = mountView({
 });
 
 export function renderRepoListError(error: any) {
-	console.error("fetchZhivaRepos failed", error);
+	log.error("Z-STORE-4-02", "fetchZhivaRepos failed", {
+		msg: error?.message ?? String(error),
+	});
 	const el = document.querySelector<HTMLElement>(listSelector);
 	if (!el) return;
 
@@ -107,6 +128,7 @@ function escapeHtml(value: string) {
 }
 
 async function fetchZhivaRepos() {
+	const elapsed = timer();
 	if (!navigator.onLine) throw new Error("You are offline.");
 
 	const res = await fetchApi("apps");
@@ -117,5 +139,10 @@ async function fetchZhivaRepos() {
 	if (data.err)
 		throw new Error(data.msg || "The store backend reported an error.");
 
-	return data.apps;
+	const apps = data.apps ?? [];
+	log.info("Z-STORE-4-01", "repo list loaded", {
+		count: apps.length,
+		ms: elapsed(),
+	});
+	return apps;
 }

@@ -2,14 +2,14 @@ import {
 	ZhivaApiOptions,
 	ZhivaApiQuery,
 } from "@wxn0brp/zhiva-base-lib/types/api";
+import { log } from "../log";
 
 export async function mockFetchApi(
 	endpoint: string,
 	options: ZhivaApiOptions = {},
 	query: ZhivaApiQuery = {},
 ): Promise<Response> {
-	console.log(`[BROWSER MODE] Mocked API call for: ${endpoint}`, {
-		options,
+	log.debug("Z-STORE-1-91", `mock ${endpoint}`, {
 		query,
 	});
 	const appName = query?.app;
@@ -72,9 +72,7 @@ export async function mockFetchApi(
 
 		case "uninstall":
 		case "update":
-			console.warn(
-				`Action "${endpoint}" is not available in browser-only mode. Doing nothing.`,
-			);
+			log.warn("Z-STORE-1-92", `"${endpoint}" unavailable in browser mode`);
 			return new Response(
 				JSON.stringify({
 					err: false,
@@ -102,7 +100,9 @@ export async function mockFetchApi(
 			);
 
 		default:
-			console.error(`Endpoint not mocked for browser mode: ${endpoint}`);
+			log.error("Z-STORE-1-93", "endpoint not mocked", {
+				endpoint,
+			});
 			return new Response(
 				JSON.stringify({
 					err: true,
@@ -159,7 +159,9 @@ async function fetchApps() {
 	);
 
 	apps.forEach(item => (item.verified = verified.includes(item.name)));
-	console.log("Fetched apps:", apps);
+	log.debug("Z-STORE-4-01", "mock apps fetched", {
+		count: apps.length,
+	});
 	return apps;
 }
 
