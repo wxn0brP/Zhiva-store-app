@@ -164,9 +164,21 @@ async function fetchApps() {
 }
 
 async function fetchAllRepos(): Promise<Repo[]> {
-	const data = await fetch(
+	const res = await fetch(
 		"https://api.github.com/search/repositories?q=topic:Zhiva-app",
-	).then(res => res.json());
+	);
+	if (!res.ok) {
+		const hint =
+			res.status === 403 || res.status === 429
+				? " (GitHub API rate limit reached, try again in a few minutes)"
+				: "";
+		throw new Error(`GitHub API responded with HTTP ${res.status}${hint}`);
+	}
+
+	const data = await res.json();
+	if (!Array.isArray(data.items))
+		throw new Error("GitHub API returned an unexpected response");
+
 	return data.items.map((item: any) => ({
 		name: item.full_name,
 		desc: item.description,
@@ -175,9 +187,13 @@ async function fetchAllRepos(): Promise<Repo[]> {
 }
 
 async function fetchData(file: string) {
-	const data = await fetch(
+	const res = await fetch(
 		`https://raw.githubusercontent.com/wxn0brP/Zhiva-registry/HEAD/${file}.txt`,
-	).then(res => res.text());
+	);
+	if (!res.ok)
+		throw new Error(`Could not load the ${file} list (HTTP ${res.status})`);
+
+	const data = await res.text();
 	return data
 		.split("\n")
 		.map(line => line.split("#")[0].trim())

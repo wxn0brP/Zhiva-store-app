@@ -6,10 +6,10 @@ import { $ } from "bun";
 import { exec } from "child_process";
 import { join } from "path";
 
-app.static("public", undefined, {
+app.static("public", {
 	errorIfDirNotFound: false,
 });
-app.static("dist", undefined, {
+app.static("dist", {
 	errorIfDirNotFound: false,
 });
 app.static(".");

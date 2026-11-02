@@ -4,8 +4,10 @@ import { Repo } from "./types";
 import { updateInstalled } from "./update/update";
 import { fetchApi } from "../api";
 
+const listSelector = "#zhiva-repo-list";
+
 export const zhivaRepoListView = mountView({
-	selector: "#zhiva-repo-list",
+	selector: listSelector,
 	queryFunction: () => fetchZhivaRepos(),
 	template: (repo: Repo) => `
 <div
@@ -75,16 +77,45 @@ export const zhivaRepoListView = mountView({
 		updateInstalled();
 	},
 	sort: (a, b) => b.stargazers_count - a.stargazers_count,
+	emptyData: `
+<div class="repo-state">
+    <h3>No applications found</h3>
+    <p>The registry returned an empty list.</p>
+</div>`,
+	onError: renderRepoListError,
 });
 
+export function renderRepoListError(error: any) {
+	console.error("fetchZhivaRepos failed", error);
+	const el = document.querySelector<HTMLElement>(listSelector);
+	if (!el) return;
+
+	el.innerHTML = `
+<div class="repo-state">
+    <h3>Could not load applications</h3>
+    <p>${escapeHtml(error?.message ?? "Unknown error")}</p>
+    <p class="repo-state-hint">Check your connection and reload the store.</p>
+</div>`;
+}
+
+function escapeHtml(value: string) {
+	return value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;");
+}
+
 async function fetchZhivaRepos() {
-	try {
-		const res = await fetchApi("apps");
-		const data = await res.json();
-		if (data.err) return [];
-		return data.apps;
-	} catch (err) {
-		console.error("fetchZhivaRepos failed", err);
-		return [];
-	}
+	if (!navigator.onLine) throw new Error("You are offline.");
+
+	const res = await fetchApi("apps");
+	if (!res.ok)
+		throw new Error(`The store backend returned HTTP ${res.status}.`);
+
+	const data = await res.json();
+	if (data.err)
+		throw new Error(data.msg || "The store backend reported an error.");
+
+	return data.apps;
 }

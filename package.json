@@ -19,10 +19,10 @@
     "devDependencies": {
         "@types/bun": "*",
         "@wxn0brp/biome": "*",
-        "@wxn0brp/db": "^0.120.0",
+        "@wxn0brp/db": "^0.120.6",
         "@wxn0brp/db-lock": "^0.120.0",
-        "@wxn0brp/flanker-dialog": "^0.1.1",
-        "@wxn0brp/flanker-ui": "^0.5.2",
+        "@wxn0brp/flanker-dialog": "^0.1.3",
+        "@wxn0brp/flanker-ui": "^0.5.4",
         "@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
         "typescript": "^7"
     }
