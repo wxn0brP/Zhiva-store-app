@@ -231,3 +231,30 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent) inset;
 }
+
+/* Empty and error states */
+.repo-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #aaa;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    background-color: rgba(18, 18, 18, 0.6);
+}
+
+.repo-state h3 {
+    margin: 0 0 0.5rem;
+    color: var(--txt);
+    font-size: 1.1rem;
+}
+
+.repo-state p {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+}
+
+.repo-state-hint {
+    color: #777;
+    font-size: 0.85rem;
+}

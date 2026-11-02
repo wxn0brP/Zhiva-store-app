@@ -1,14 +1,18 @@
 #FD-message div {
-  position: absolute;
+  position: fixed;
+  width: fit-content;
   max-width: 70%;
+  margin-inline: auto;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
   top: -10rem;
-  left: 50%;
+  left: 0;
+  right: 0;
   transition: 0.7s ease;
   font-size: 1.6rem;
   border-radius: 1rem;
   letter-spacing: 2px;
   padding: 7px 12px;
-  transform: translateX(-50%);
   z-index: 99;
   cursor: pointer;
 }
@@ -18,11 +22,16 @@
   box-shadow: 0 0 10px 5px rgba(var(--accentRGB), 0.5);
 }
 
+@media (max-width: 768px) {
+  #FD-message div {
+    max-width: 90vw;
+  }
+}
 #FD-prompt {
   text-align: center;
 }
 #FD-prompt > div {
-  position: absolute;
+  position: fixed;
   min-width: 200px;
   max-width: 70%;
   top: 50%;
