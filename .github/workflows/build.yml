@@ -36,6 +36,7 @@ jobs:
           cp package.zhiva.json gh-pages-dist/package.json
           mkdir gh-pages-dist/src
           cp src/index.ts gh-pages-dist/src/index.ts
+          cp src/log.ts gh-pages-dist/src/log.ts
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
