@@ -3,9 +3,29 @@ import { fetchApi } from "../api";
 import { log, timer } from "../log";
 import { findRepoIcon } from "./icon";
 import { Repo } from "./types";
-import { updateInstalled } from "./update/update";
+import {
+	handleInstallClick,
+	handleOpenDirClick,
+	handleOpenGhClick,
+	handleStartClick,
+	handleUninstallClick,
+	updateInstalled,
+} from "./update/update";
 
 const listSelector = "#zhiva-repo-list";
+
+let renderedRepos: Repo[] = [];
+
+function cardOf(el: HTMLElement) {
+	return el.closest(".repo-card") as HTMLElement | null;
+}
+
+function withCard(handler: (card: HTMLElement) => void) {
+	return (el: HTMLElement) => {
+		const card = cardOf(el);
+		if (card) handler(card);
+	};
+}
 
 export const zhivaRepoListView = mountView({
 	selector: listSelector,
@@ -35,6 +55,7 @@ export const zhivaRepoListView = mountView({
 								}
             </div>
             <span class="installed"></span>
+            <span class="update-badge" hidden>Update available</span>
         </div>
     </div>
     <div class="repo-body">
@@ -60,39 +81,21 @@ export const zhivaRepoListView = mountView({
     </div>
 </div>
     `,
+	events: {
+		click: {
+			".install": withCard(handleInstallClick),
+			".uninstall": withCard(handleUninstallClick),
+			".start": withCard(handleStartClick),
+			".open-dir": withCard(handleOpenDirClick),
+			".open-gh": withCard(handleOpenGhClick),
+		},
+	},
 	onData: repos => {
-		Promise.allSettled(
-			repos.map(async (repo: Repo) => {
-				const iconUrl = await findRepoIcon(repo);
-				const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
-				if (!card || !iconUrl) return false;
-
-				const img = document.createElement("img");
-				img.src = iconUrl;
-				img.alt = `📦`;
-				img.width = 32;
-				img.height = 32;
-				card.innerHTML = "";
-				card.appendChild(img);
-				return true;
-			}),
-		).then(results => {
-			const rejected = results.filter(result => result.status === "rejected");
-			const failed = results.filter(
-				result => result.status === "fulfilled" && !result.value,
-			).length;
-
-			for (const result of rejected)
-				log.warn("Z-STORE-4-05", "icon failed", result.reason);
-
-			log.debug("Z-STORE-4-04", "icons resolved", {
-				total: repos.length,
-				applied: repos.length - failed - rejected.length,
-				failed,
-				rejected: rejected.length,
-			});
-		});
-
+		renderedRepos = repos;
+	},
+	onLoading: loading => {
+		if (loading) return;
+		applyIcons(renderedRepos);
 		updateInstalled();
 	},
 	sort: (a, b) => b.stargazers_count - a.stargazers_count,
@@ -103,6 +106,40 @@ export const zhivaRepoListView = mountView({
 </div>`,
 	onError: renderRepoListError,
 });
+
+function applyIcons(repos: Repo[]) {
+	Promise.allSettled(
+		repos.map(async (repo: Repo) => {
+			const iconUrl = await findRepoIcon(repo);
+			const card = qs(`.repo-card[data-name="${repo.name}"] .repo-icon`);
+			if (!card || !iconUrl) return false;
+
+			const img = document.createElement("img");
+			img.src = iconUrl;
+			img.alt = `📦`;
+			img.width = 32;
+			img.height = 32;
+			card.innerHTML = "";
+			card.appendChild(img);
+			return true;
+		}),
+	).then(results => {
+		const rejected = results.filter(result => result.status === "rejected");
+		const failed = results.filter(
+			result => result.status === "fulfilled" && !result.value,
+		).length;
+
+		for (const result of rejected)
+			log.warn("Z-STORE-4-05", "icon failed", result.reason);
+
+		log.debug("Z-STORE-4-04", "icons resolved", {
+			total: repos.length,
+			applied: repos.length - failed - rejected.length,
+			failed,
+			rejected: rejected.length,
+		});
+	});
+}
 
 export function renderRepoListError(error: any) {
 	log.error("Z-STORE-4-02", "fetchZhivaRepos failed", {

@@ -6,7 +6,7 @@ import { log, timer } from "./log";
 import { initSettings } from "./ui/settings";
 import { checkForUpdates } from "./ui/update/check";
 import { updateInstalled } from "./ui/update/update";
-import { appsToUpdateCount, updateStatus, zhivaInstalled } from "./ui/vars";
+import { pendingUpdates, updateStatus, zhivaInstalled } from "./ui/vars";
 import { zhivaRepoListView } from "./ui/view";
 
 async function init() {
@@ -47,8 +47,7 @@ async function init() {
 init();
 initSettings();
 
-appsToUpdateCount.subscribe(count => {
-	if (count < 0) return appsToUpdateCount.set(0);
-	if (!count) return (updateStatus.innerHTML = "No updates available");
-	updateStatus.innerHTML = `Updates available for: ${count} app${count === 1 ? "" : "s"}.`;
+pendingUpdates.subscribe(updates => {
+	if (!updates.length) return (updateStatus.innerHTML = "No updates available");
+	updateStatus.innerHTML = `Updates available for: ${updates.length} app${updates.length === 1 ? "" : "s"}.`;
 });
